@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+
+@theme {
+    --breakpoint-*: initial;
+    --breakpoint-mobile: 340px;
+    --breakpoint-tablet: 640px;
+    --breakpoint-laptop: 1100px;
+    --breakpoint-desktop: 1500px;
+}
+
+
+@font-face {
+    font-family: Number;
+    src: url(../../public/font/fontello-Cqw191qV.woff2);
+    src: url(../../public/font/Shabnam-Bold-FD-B4xNpIWI.woff2);
+    src: url(../../public/font/Shabnam-FD-UqE7V9cL.woff2);
+    src: url(../../public/font/Shabnam-Medium-FD-CCYWnpK7.woff2);
+  }  
+:root {
+    --fontFamily: Number;
+}

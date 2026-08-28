@@ -1,0 +1,58 @@
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* دکمه‌های navigation */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #0ba6df; /* رنگ دکمه */
+  background: rgba(255, 255, 255, 0.8); /* پس‌زمینه نیمه شفاف */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* گرد شدن دکمه‌ها */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* سایه ظریف */
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+/* حالت هاور */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #0ba6df;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* موقعیت دکمه‌ها */
+.swiper-button-prev {
+  left: 10px;
+}
+
+.swiper-button-next {
+  right: 10px;
+}
+
+/* برای RTL اگر نیاز بود */
+.swiper-rtl .swiper-button-prev {
+  right: 10px;
+  left: auto;
+}
+
+.swiper-rtl .swiper-button-next {
+  left: 10px;
+  right: auto;
+}
