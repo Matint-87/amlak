@@ -12,10 +12,17 @@ interface Ad {
   title: string;
   address: string;
   type: string;
-  price?: number;
-  rent?: number;
-  deposit?: number;
+  price?: number | null;
+  rent?: number | null;
+  deposit?: number | null;
   images: string[] | string; 
+}
+
+// مقدار null/undefined یعنی اصلاً ثبت نشده، ۰ یعنی «توافقی»
+function formatAmount(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "-";
+  if (value === 0) return "توافقی";
+  return value.toLocaleString("fa-IR") + " تومان";
 }
 
 export default function Slider({ ads }: { ads: Ad[] }) {
@@ -75,18 +82,15 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                 </div>
                 {p.type === "buy" ? (
                   <p className="text-base font-semibold mt-3">
-                    <b>قیمت خرید:</b> {p.price ? p.price.toLocaleString() : "-"}{" "}
-                    تومان
+                    <b>قیمت خرید:</b> {formatAmount(p.price)}
                   </p>
                 ) : (
                   <>
                     <p className="text-sm mt-3">
-                      <b>رهن:</b> {p.deposit ? p.deposit.toLocaleString() : "-"}{" "}
-                      تومان
+                      <b>رهن:</b> {formatAmount(p.deposit)}
                     </p>
                     <p className="text-sm">
-                      <b>اجاره ماهیانه:</b>{" "}
-                      {p.rent ? p.rent.toLocaleString() : "-"} تومان
+                      <b>اجاره ماهیانه:</b> {formatAmount(p.rent)}
                     </p>
                   </>
                 )}

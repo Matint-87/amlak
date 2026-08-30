@@ -12,12 +12,19 @@ export interface Property {
   address: string;
   description?: string;
   phone?: string;
-  price: number;
-  rent: number;
-  deposit: number;
+  price: number | null;
+  rent: number | null;
+  deposit: number | null;
   type: "buy" | "rent";
   images: string[];
   meter: number;
+}
+
+// مقدار null/undefined یعنی اصلاً ثبت نشده، ۰ یعنی «توافقی»
+function formatAmount(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "-";
+  if (value === 0) return "توافقی";
+  return value.toLocaleString("fa-IR") + " تومان";
 }
 
 export default function SalePage() {
@@ -104,7 +111,7 @@ export default function SalePage() {
                 </p>
 
                 <p className="text-base font-semibold mb-1">
-                  <b>قیمت خرید:</b> {p.price ? p.price.toLocaleString() : "-"} تومان
+                  <b>قیمت خرید:</b> {formatAmount(p.price)}
                 </p>
               </Link>
             ))

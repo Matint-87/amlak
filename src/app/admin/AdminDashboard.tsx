@@ -41,10 +41,11 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       );
     }
     
+    // "بدون قیمت" یعنی مقدار اصلاً ثبت نشده (null)، نه اینکه صفر (توافقی) باشد
     if (!showEmptyPrices) {
       filtered = filtered.filter(p => {
-        if (p.type === 'buy') return p.price > 0;
-        if (p.type === 'rent') return p.rent > 0 || p.deposit > 0;
+        if (p.type === 'buy') return p.price !== null && p.price !== undefined;
+        if (p.type === 'rent') return (p.rent !== null && p.rent !== undefined) || (p.deposit !== null && p.deposit !== undefined);
         return true;
       });
     }
@@ -59,11 +60,15 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       if (!res.ok) throw new Error('خطا در دریافت آگهی‌ها');
       const { data } = await res.json();
 
+      // مهم: null را با Number(...) || 0 به صفر تبدیل نکن، وگرنه فرق «توافقی» (۰ عمدی)
+      // و «تعیین نشده» (خالی) از بین می‌رود. مقدار null باید null بماند.
+      const toNumOrNull = (v: any) => (v === null || v === undefined || v === '' ? null : Number(v));
+
       const sanitizedData = (data || []).map((property: any) => ({
         ...property,
-        price: Number(property.price) || 0,
-        rent: Number(property.rent) || 0,
-        deposit: Number(property.deposit) || 0,
+        price: toNumOrNull(property.price),
+        rent: toNumOrNull(property.rent),
+        deposit: toNumOrNull(property.deposit),
         meter: Number(property.meter) || 0,
       }));
       
@@ -115,8 +120,10 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }
   };
 
-  const formatPrice = (price: number) => {
-    if (!price || price === 0) return 'قیمت نامشخص';
+  // price می‌تواند null (اصلاً ثبت نشده) یا عدد (شامل ۰ به معنای توافقی) باشد
+  const formatPrice = (price: number | null | undefined) => {
+    if (price === null || price === undefined) return 'قیمت تعیین نشده';
+    if (price === 0) return 'توافقی';
     return new Intl.NumberFormat('fa-IR').format(price) + ' تومان';
   };
 
@@ -130,19 +137,27 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
   const renderPriceInfo = (property: any) => {
     if (property.type === 'buy') {
-      const hasPrice = property.price && property.price > 0;
+      const isSet = property.price !== null && property.price !== undefined;
+      const isNegotiable = property.price === 0;
       return (
-        <div className={`flex items-center ${!hasPrice ? 'text-red-500' : ''}`}>
-          <span className={`font-bold ${hasPrice ? 'text-green-600' : 'text-red-500'}`}>
-            {hasPrice ? formatPrice(property.price) : 'قیمت تعیین نشده'}
-          </span>
+        <div className={`flex items-center ${!isSet ? 'text-red-500' : ''}`}>
+          {!isSet ? (
+            <>
+              <EyeOff className="w-4 h-4 ml-1" />
+              <span className="text-sm">قیمت تعیین نشده</span>
+            </>
+          ) : (
+            <span className={`font-bold ${isNegotiable ? 'text-amber-600' : 'text-green-600'}`}>
+              {formatPrice(property.price)}
+            </span>
+          )}
         </div>
       );
     } else if (property.type === 'rent') {
-      const hasRent = property.rent && property.rent > 0;
-      const hasDeposit = property.deposit && property.deposit > 0;
-      
-      if (!hasRent && !hasDeposit) {
+      const rentSet = property.rent !== null && property.rent !== undefined;
+      const depositSet = property.deposit !== null && property.deposit !== undefined;
+
+      if (!rentSet && !depositSet) {
         return (
           <div className="flex items-center text-red-500 text-sm">
             <EyeOff className="w-4 h-4 ml-1" />
@@ -153,16 +168,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
       return (
         <div className="space-y-1">
-          {hasRent && (
+          {rentSet && (
             <div className="flex items-center">
-              <span className="font-bold text-blue-600">
+              <span className={`font-bold ${property.rent === 0 ? 'text-amber-600' : 'text-blue-600'}`}>
                 اجاره: {formatPrice(property.rent)}
               </span>
             </div>
           )}
-          {hasDeposit && (
+          {depositSet && (
             <div className="flex items-center">
-              <span className="text-purple-600">
+              <span className={`${property.deposit === 0 ? 'text-amber-600' : 'text-purple-600'}`}>
                 ودیعه: {formatPrice(property.deposit)}
               </span>
             </div>
@@ -179,8 +194,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     forSale: properties.filter(p => p.type === 'buy').length,
     forRent: properties.filter(p => p.type === 'rent').length,
     withPrice: properties.filter(p => {
-      if (p.type === 'buy') return p.price > 0;
-      if (p.type === 'rent') return p.rent > 0 || p.deposit > 0;
+      if (p.type === 'buy') return p.price !== null && p.price !== undefined;
+      if (p.type === 'rent') return (p.rent !== null && p.rent !== undefined) || (p.deposit !== null && p.deposit !== undefined);
       return false;
     }).length,
     recent: properties.filter(p => {

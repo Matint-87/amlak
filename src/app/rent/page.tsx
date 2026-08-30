@@ -12,12 +12,19 @@ export interface Property {
   address: string;
   description?: string;
   phone?: string;
-  price: number;
-  rent: number;
-  deposit: number;
+  price: number | null;
+  rent: number | null;
+  deposit: number | null;
   type: "buy" | "rent";
   images: string[];
   meter: number;
+}
+
+// مقدار null/undefined یعنی اصلاً ثبت نشده، ۰ یعنی «توافقی»
+function formatAmount(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "-";
+  if (value === 0) return "توافقی";
+  return value.toLocaleString("fa-IR") + " تومان";
 }
 
 export default function RentPage() {
@@ -106,10 +113,10 @@ export default function RentPage() {
                 </p>
 
                 <p className="text-sm mb-1">
-                  <b>رهن:</b> {p.deposit ? p.deposit.toLocaleString() : "-"} تومان
+                  <b>رهن:</b> {formatAmount(p.deposit)}
                 </p>
                 <p className="text-sm mb-2">
-                  <b>اجاره ماهیانه:</b> {p.rent ? p.rent.toLocaleString() : "-"} تومان
+                  <b>اجاره ماهیانه:</b> {formatAmount(p.rent)}
                 </p>
               </Link>
             ))
