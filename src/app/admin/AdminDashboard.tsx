@@ -487,21 +487,12 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200">
       <div className="relative h-40 sm:h-48">
         {property.images && property.images.length > 0 ? (
-          <>
-            {/* پس‌زمینه محو‌شده، برای پر کردن فضای خالی بدون برش زدن عکس اصلی */}
-            <img
-              src={property.images[0]}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60"
-            />
-            <img
-              src={property.images[0]}
-              alt={property.title}
-              className="relative w-full h-full object-contain"
-              loading="lazy"
-            />
-          </>
+          <img 
+            src={property.images[0]} 
+            alt={property.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             <span className="text-gray-400">🏠 بدون تصویر</span>

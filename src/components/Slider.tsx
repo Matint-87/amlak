@@ -66,24 +66,13 @@ export default function Slider({ ads }: { ads: Ad[] }) {
         <SwiperSlide key={p.id}>
           <Link href={`/property/${p.id}`}>
             <div className="flex flex-col p-2 h-[350px] bg-white">
-              <div className="relative rounded-md w-[300px] h-[220px] overflow-hidden bg-gray-100">
-                {/* پس‌زمینه محو‌شده، برای پر کردن فضای خالی بدون برش زدن عکس اصلی */}
-                <Image
-                  src={getFirstImage(p.images)}
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  sizes="300px"
-                  className="object-cover scale-110 blur-xl opacity-60"
-                />
-                <Image
-                  src={getFirstImage(p.images)}
-                  alt={p.title || "Property Image"}
-                  fill
-                  sizes="300px"
-                  className="object-contain"
-                />
-              </div>
+              <Image
+                src={getFirstImage(p.images)}
+                width={300}
+                height={200}
+                alt={p.title || "Property Image"}
+                className="rounded-md w-[300px] h-[220px]"
+              />
               <div className="flex flex-col items-start h-[130px] justify-between mt-2">
                 <div className="flex flex-col items-start">
                   <span className="text-lg font-semibold">{p.title}</span>
