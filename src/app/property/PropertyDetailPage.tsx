@@ -248,16 +248,15 @@ export default function PropertyDetailPage() {
 
               {property.images && property.images.length > 0 ? (
                 <div className="space-y-4">
-                  {/* تصویر اصلی - اندازه بزرگ‌تر شد تا واضح‌تر دیده شود */}
+                  {/* تصویر اصلی - بدون کراپ، بدون فضای خالی چپ/راست، هم‌اندازه‌ی خودِ عکس */}
                   <div
-                    className="relative w-full h-80 sm:h-[420px] md:h-[550px] lg:h-[600px] rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in group"
+                    className="relative mx-auto max-h-[600px] w-fit rounded-xl overflow-hidden bg-black cursor-zoom-in group"
                     onClick={() => setLightboxOpen(true)}
                   >
-                    {/* پس‌زمینه محو‌شده از خود تصویر، برای پر کردن فضای خالی بدون برش زدن عکس اصلی */}
                     <img
                       src={property.images[index]}
                       alt={property.title}
-                      className="relative w-full h-full object-contain"
+                      className="block max-h-[600px] w-auto mx-auto"
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder.jpg";
                       }}
@@ -275,7 +274,7 @@ export default function PropertyDetailPage() {
                       <>
                         <button
                           onClick={(e) => {
-                            e.stopPropagation(); // نذاره کلیک روی دکمه، لایت‌باکس رو باز کنه
+                            e.stopPropagation();
                             setIndex((i) =>
                               i === 0 ? property.images!.length - 1 : i - 1,
                             );

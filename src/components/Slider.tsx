@@ -42,7 +42,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
       breakpoints={{
         0: {
           slidesPerView: 1.5,
-          spaceBetween: 0,
+          spaceBetween: 5,
         },
         640: {
           slidesPerView: 2,
@@ -65,7 +65,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
       {ads.map((p) => (
         <SwiperSlide key={p.id}>
           <Link href={`/property/${p.id}`}>
-            <div className="flex flex-col p-2 h-[350px] bg-white shadow-2xl">
+            <div className="flex flex-col p-2 h-[350px] bg-white border border-gray-400">
               <Image
                 src={getFirstImage(p.images)}
                 width={300}
