@@ -65,7 +65,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
       {ads.map((p) => (
         <SwiperSlide key={p.id}>
           <Link href={`/property/${p.id}`}>
-            <div className="flex flex-col p-2 h-[350px] bg-white">
+            <div className="flex flex-col p-2 h-[350px] bg-white shadow-2xl">
               <Image
                 src={getFirstImage(p.images)}
                 width={300}

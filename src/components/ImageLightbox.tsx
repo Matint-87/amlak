@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
+import { createPortal } from "react-dom";
 import { MdNavigateNext, MdClose } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
 
@@ -21,6 +22,12 @@ export default function ImageLightbox({
   onIndexChange,
   title,
 }: ImageLightboxProps) {
+  // Portal فقط سمت کلاینت کار می‌کنه (به document نیاز داره)، پس صبر می‌کنیم mount بشه
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const goPrev = useCallback(() => {
     if (!images.length) return;
     onIndexChange(index === 0 ? images.length - 1 : index - 1);
@@ -41,7 +48,6 @@ export default function ImageLightbox({
       if (e.key === "ArrowRight") goNext();
     };
 
-    // جلوگیری از اسکرول پس‌زمینه وقتی لایت‌باکس بازه
     document.addEventListener("keydown", handleKeyDown);
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -52,11 +58,12 @@ export default function ImageLightbox({
     };
   }, [isOpen, goPrev, goNext, onClose]);
 
-  if (!isOpen || !images || images.length === 0) return null;
+  if (!mounted || !isOpen || !images || images.length === 0) return null;
 
-  return (
+  const content = (
     <div
-      className="fixed inset-0 z-[999] bg-black/95 flex items-center justify-center"
+      className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
+      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
       onClick={onClose} // کلیک روی پس‌زمینه، مودال رو می‌بنده
     >
       {/* دکمه بستن */}
@@ -110,9 +117,9 @@ export default function ImageLightbox({
         </>
       )}
 
-      {/* تصویر اصلی، تمام‌صفحه و کامل بدون برش */}
+      {/* تصویر اصلی، تمام‌صفحه و کامل بدون برش، بدون پس‌زمینه‌ی بلورشده */}
       <div
-        className="relative w-full h-full flex items-center justify-center p-4 md:p-10"
+        className="relative w-screen h-screen flex items-center justify-center p-4 md:p-10"
         onClick={(e) => e.stopPropagation()} // کلیک روی خود تصویر مودال رو نبنده
       >
         <img
@@ -149,4 +156,7 @@ export default function ImageLightbox({
       )}
     </div>
   );
+
+  // مستقیم به body می‌چسبونیمش، بیرون از هر والدی که transform/filter/perspective داره
+  return createPortal(content, document.body);
 }
