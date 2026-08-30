@@ -55,9 +55,12 @@ export default function PropertyDetailPage() {
 
       try {
         // جستجوی آگهی بر اساس slug (این API خودش fallback به id را هم پشتیبانی می‌کند)
-        const res = await fetch(`/api/properties/slug/${encodeURIComponent(slug)}`, {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `/api/properties/slug/${encodeURIComponent(slug)}`,
+          {
+            cache: "no-store",
+          },
+        );
 
         if (res.status === 404) {
           setError("آگهی پیدا نشد");
@@ -96,7 +99,7 @@ export default function PropertyDetailPage() {
             }
           } else if (Array.isArray(data.images)) {
             images = data.images.filter(
-              (img: string) => img && img.trim() !== ""
+              (img: string) => img && img.trim() !== "",
             );
           }
         }
@@ -227,6 +230,104 @@ export default function PropertyDetailPage() {
         {/* سایدبار سمت راست - اطلاعات کلی */}
         <div className="lg:w-2/3">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* گالری تصاویر */}
+            <div className="p-6">
+              <h3 className="font-semibold text-lg mb-4">
+                تصاویر ({property.images?.length || 0})
+              </h3>
+
+              {property.images && property.images.length > 0 ? (
+                <div className="space-y-4">
+                  {/* تصویر اصلی */}
+                  <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden bg-gray-100">
+                    <img
+                      src={property.images[index]}
+                      alt={property.title}
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.jpg";
+                      }}
+                    />
+
+                    {/* دکمه‌های ناوبری */}
+                    {property.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={() =>
+                            setIndex((i) =>
+                              i === 0 ? property.images!.length - 1 : i - 1,
+                            )
+                          }
+                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-colors"
+                          aria-label="تصویر قبلی"
+                        >
+                          <GrFormPrevious size={24} />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            setIndex((i) =>
+                              i === property.images!.length - 1 ? 0 : i + 1,
+                            )
+                          }
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-colors"
+                          aria-label="تصویر بعدی"
+                        >
+                          <MdNavigateNext size={24} />
+                        </button>
+                      </>
+                    )}
+
+                    {/* شمارنده */}
+                    {property.images.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                        {index + 1} / {property.images.length}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* گالری کوچک */}
+                  {property.images.length > 1 && (
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                      {property.images.map((img, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setIndex(i)}
+                          className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                            i === index
+                              ? "border-blue-500"
+                              : "border-gray-300 hover:border-gray-400"
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`thumbnail-${i}`}
+                            className="object-cover w-full h-full"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-gray-100 rounded-xl">
+                  <svg
+                    className="w-16 h-16 mx-auto text-gray-400 mb-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <p className="text-gray-500">تصویری برای نمایش وجود ندارد</p>
+                </div>
+              )}
+            </div>
             {/* عنوان و تگ */}
             <div className="p-6 border-b">
               <div className="flex justify-between items-start mb-3">
@@ -326,105 +427,6 @@ export default function PropertyDetailPage() {
                 </p>
               </div>
             )}
-
-            {/* گالری تصاویر */}
-            <div className="p-6">
-              <h3 className="font-semibold text-lg mb-4">
-                تصاویر ({property.images?.length || 0})
-              </h3>
-
-              {property.images && property.images.length > 0 ? (
-                <div className="space-y-4">
-                  {/* تصویر اصلی */}
-                  <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden bg-gray-100">
-                    <img
-                      src={property.images[index]}
-                      alt={property.title}
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.jpg";
-                      }}
-                    />
-
-                    {/* دکمه‌های ناوبری */}
-                    {property.images.length > 1 && (
-                      <>
-                        <button
-                          onClick={() =>
-                            setIndex((i) =>
-                              i === 0 ? property.images!.length - 1 : i - 1
-                            )
-                          }
-                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-colors"
-                          aria-label="تصویر قبلی"
-                        >
-                          <GrFormPrevious size={24} />
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            setIndex((i) =>
-                              i === property.images!.length - 1 ? 0 : i + 1
-                            )
-                          }
-                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-colors"
-                          aria-label="تصویر بعدی"
-                        >
-                          <MdNavigateNext size={24} />
-                        </button>
-                      </>
-                    )}
-
-                    {/* شمارنده */}
-                    {property.images.length > 1 && (
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                        {index + 1} / {property.images.length}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* گالری کوچک */}
-                  {property.images.length > 1 && (
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                      {property.images.map((img, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setIndex(i)}
-                          className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                            i === index
-                              ? "border-blue-500"
-                              : "border-gray-300 hover:border-gray-400"
-                          }`}
-                        >
-                          <img
-                            src={img}
-                            alt={`thumbnail-${i}`}
-                            className="object-cover w-full h-full"
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 bg-gray-100 rounded-xl">
-                  <svg
-                    className="w-16 h-16 mx-auto text-gray-400 mb-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-gray-500">تصویری برای نمایش وجود ندارد</p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
 

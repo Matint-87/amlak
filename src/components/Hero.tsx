@@ -1,25 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 export default function Hero() {
-  const [counts, setCounts] = useState(0);
+  // const [counts, setCounts] = useState(0);
 
-  const getCount = async () => {
-    try {
-      const res = await fetch("/api/properties?count=1", { cache: "no-store" });
-      if (!res.ok) throw new Error("خطا در دریافت تعداد آگهی‌ها");
-      const data = await res.json();
-      setCounts(data.count ?? 0);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getCount = async () => {
+  //   try {
+  //     const res = await fetch("/api/properties?count=1", { cache: "no-store" });
+  //     if (!res.ok) throw new Error("خطا در دریافت تعداد آگهی‌ها");
+  //     const data = await res.json();
+  //     setCounts(data.count ?? 0);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    getCount();
-  }, []);
+  // useEffect(() => {
+  //   getCount();
+  // }, []);
 
   return (
     <div className="relative font-[Number] w-full h-[550px] md:h-[450px] overflow-hidden shadow-lg">
@@ -34,9 +34,9 @@ export default function Hero() {
         <p className="text-sm md:text-lg mt-3 opacity-90">
           املاک برتر را در بهترین مناطق کشف کنید
         </p>
-        <div className="hover:bg-[#2b2b2b] select-none text-xs hover:text-white duration-300 bg-white px-5 py-2 font-bold rounded-3xl text-[#2b2b2b] flex justify-center items-center mt-3">
+        {/* <div className="hover:bg-[#2b2b2b] select-none text-xs hover:text-white duration-300 bg-white px-5 py-2 font-bold rounded-3xl text-[#2b2b2b] flex justify-center items-center mt-3">
           <span>بیش از {counts} ملک موجود</span>
-        </div>
+        </div> */}
       </div>
     </div>
   );
