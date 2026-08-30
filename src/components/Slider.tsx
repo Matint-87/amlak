@@ -6,7 +6,10 @@ import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import Image from "next/image";
 import Link from "next/link";
-import { HiOutlineLocationMarker, HiOutlineArrowLeft } from "react-icons/hi";
+import {
+  HiOutlineLocationMarker,
+  HiOutlineArrowLeft,
+} from "react-icons/hi";
 
 interface Ad {
   id: number;
@@ -37,7 +40,9 @@ export default function Slider({ ads }: { ads: Ad[] }) {
     try {
       const arr = JSON.parse(images);
 
-      return Array.isArray(arr) && arr.length ? arr[0] : "/hero.jpg";
+      return Array.isArray(arr) && arr.length
+        ? arr[0]
+        : "/hero.jpg";
     } catch {
       return "/hero.jpg";
     }
@@ -90,7 +95,10 @@ export default function Slider({ ads }: { ads: Ad[] }) {
 
         return (
           <SwiperSlide key={p.id}>
-            <Link href={`/property/${p.id}`} className="group block">
+            <Link
+              href={`/property/${p.id}`}
+              className="group block"
+            >
               <article
                 className="
                   overflow-hidden
@@ -101,14 +109,15 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                 "
               >
                 {/* IMAGE */}
-                {/* IMAGE */}
                 <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
                   <Image
                     src={getFirstImage(p.images)}
                     fill
                     sizes="(max-width: 640px) 80vw, 300px"
                     alt={p.title || "تصویر ملک"}
-                    className="object-contain"
+                    className="
+                      object-cover
+                    "
                   />
 
                   {/* Overlay */}
@@ -128,7 +137,11 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                       text-white
                       shadow-sm
                       backdrop-blur-sm
-                      ${isBuy ? "bg-blue-600/90" : "bg-emerald-600/90"}
+                      ${
+                        isBuy
+                          ? "bg-blue-600/90"
+                          : "bg-emerald-600/90"
+                      }
                     `}
                   >
                     {isBuy ? "فروش" : "رهن و اجاره"}
@@ -137,7 +150,9 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   {/* Main price */}
                   <div className="absolute bottom-3 right-3">
                     <p className="text-sm font-bold text-white drop-shadow-md">
-                      {isBuy ? formatAmount(p.price) : formatAmount(p.deposit)}
+                      {isBuy
+                        ? formatAmount(p.price)
+                        : formatAmount(p.deposit)}
                     </p>
 
                     {!isBuy && (
@@ -162,7 +177,9 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                       size={14}
                     />
 
-                    <span className="truncate">{p.address}</span>
+                    <span className="truncate">
+                      {p.address}
+                    </span>
                   </div>
 
                   {/* Divider */}
@@ -171,7 +188,9 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   {/* PRICE */}
                   {isBuy ? (
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-gray-400">قیمت کل</span>
+                      <span className="text-[11px] text-gray-400">
+                        قیمت کل
+                      </span>
 
                       <span className="text-sm font-bold text-gray-800">
                         {formatAmount(p.price)}
@@ -180,7 +199,9 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   ) : (
                     <div className="grid grid-cols-2 gap-2">
                       <div className="rounded-lg bg-gray-50 px-2 py-2">
-                        <p className="text-[10px] text-gray-400">رهن</p>
+                        <p className="text-[10px] text-gray-400">
+                          رهن
+                        </p>
 
                         <p className="mt-0.5 truncate text-xs font-bold text-gray-800">
                           {formatAmount(p.deposit)}
@@ -188,7 +209,9 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                       </div>
 
                       <div className="rounded-lg bg-gray-50 px-2 py-2">
-                        <p className="text-[10px] text-gray-400">اجاره</p>
+                        <p className="text-[10px] text-gray-400">
+                          اجاره
+                        </p>
 
                         <p className="mt-0.5 truncate text-xs font-bold text-gray-800">
                           {formatAmount(p.rent)}
@@ -196,6 +219,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                       </div>
                     </div>
                   )}
+
                 </div>
               </article>
             </Link>
