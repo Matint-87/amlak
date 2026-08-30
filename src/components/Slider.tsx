@@ -117,9 +117,6 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                     alt={p.title || "تصویر ملک"}
                     className="
                       object-cover
-                      transition-transform
-                      duration-500
-                      group-hover:scale-105
                     "
                   />
 
