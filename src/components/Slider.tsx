@@ -105,7 +105,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   rounded-2xl
                   border border-gray-200
                   bg-white
-                  h-[330px]
+                  h-[380px]
                 "
               >
                 {/* IMAGE */}
