@@ -256,7 +256,7 @@ export default function PropertyDetailPage() {
                     <img
                       src={property.images[index]}
                       alt={property.title}
-                      className="block h-full mx-auto object-cover w-full"
+                      className="block h-full mx-auto w-full"
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder.jpg";
                       }}

@@ -105,10 +105,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   rounded-2xl
                   border border-gray-200
                   bg-white
-                  shadow-[0_2px_10px_rgba(0,0,0,0.06)]
-                  transition-all duration-300
-                  hover:-translate-y-1
-                  hover:shadow-[0_8px_25px_rgba(0,0,0,0.10)]
+                  h-[330px]
                 "
               >
                 {/* IMAGE */}
