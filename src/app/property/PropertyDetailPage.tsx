@@ -250,7 +250,7 @@ export default function PropertyDetailPage() {
                 <div className="space-y-4">
                   {/* تصویر اصلی - بدون کراپ، بدون فضای خالی چپ/راست، هم‌اندازه‌ی خودِ عکس */}
                   <div
-                    className="relative mx-auto max-h-[600px] w-fit rounded-xl overflow-hidden bg-black cursor-zoom-in group"
+                    className="relative mx-auto max-h-[600px] w-full rounded-xl overflow-hidden bg-black cursor-zoom-in group"
                     onClick={() => setLightboxOpen(true)}
                   >
                     <img
