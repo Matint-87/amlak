@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MdNavigateNext } from "react-icons/md";
+import { MdNavigateNext, MdZoomIn } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
 import { IoArrowBack } from "react-icons/io5";
 import Link from "next/link";
+import ImageLightbox from "@/src/components/ImageLightbox";
 
 export interface Property {
   id: string;
@@ -30,6 +31,7 @@ export default function PropertyDetailPage() {
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false); // کنترل باز/بسته بودن نمایش تمام‌صفحه
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -246,8 +248,11 @@ export default function PropertyDetailPage() {
 
               {property.images && property.images.length > 0 ? (
                 <div className="space-y-4">
-                  {/* تصویر اصلی */}
-                  <div className="relative w-full h-64 md:h-96 rounded-xl overflow-hidden bg-gray-100">
+                  {/* تصویر اصلی - اندازه بزرگ‌تر شد تا واضح‌تر دیده شود */}
+                  <div
+                    className="relative w-full h-80 sm:h-[420px] md:h-[550px] lg:h-[600px] rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in group"
+                    onClick={() => setLightboxOpen(true)}
+                  >
                     {/* پس‌زمینه محو‌شده از خود تصویر، برای پر کردن فضای خالی بدون برش زدن عکس اصلی */}
                     <img
                       src={property.images[index]}
@@ -265,15 +270,23 @@ export default function PropertyDetailPage() {
                       }}
                     />
 
+                    {/* آیکون بزرگ‌نمایی، برای اطلاع کاربر که تصویر قابل کلیک است */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors pointer-events-none">
+                      <div className="opacity-0 group-hover:opacity-100 bg-white/90 p-3 rounded-full transition-opacity">
+                        <MdZoomIn size={28} />
+                      </div>
+                    </div>
+
                     {/* دکمه‌های ناوبری */}
                     {property.images.length > 1 && (
                       <>
                         <button
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.stopPropagation(); // نذاره کلیک روی دکمه، لایت‌باکس رو باز کنه
                             setIndex((i) =>
                               i === 0 ? property.images!.length - 1 : i - 1,
-                            )
-                          }
+                            );
+                          }}
                           className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-colors"
                           aria-label="تصویر قبلی"
                         >
@@ -281,11 +294,12 @@ export default function PropertyDetailPage() {
                         </button>
 
                         <button
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setIndex((i) =>
                               i === property.images!.length - 1 ? 0 : i + 1,
-                            )
-                          }
+                            );
+                          }}
                           className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-colors"
                           aria-label="تصویر بعدی"
                         >
@@ -547,6 +561,18 @@ export default function PropertyDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* لایت‌باکس - نمایش تمام‌صفحه‌ی تصویر با کلیک */}
+      {property.images && property.images.length > 0 && (
+        <ImageLightbox
+          images={property.images}
+          index={index}
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setIndex}
+          title={property.title}
+        />
+      )}
     </div>
   );
 }
