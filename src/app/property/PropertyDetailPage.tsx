@@ -33,15 +33,25 @@ export default function PropertyDetailPage() {
 
   useEffect(() => {
     const fetchProperty = async () => {
-      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+      const rawSlug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
-      console.log("🔍 جستجوی آگهی با slug:", slug);
-
-      if (!slug) {
+      if (!rawSlug) {
         setError("آدرس آگهی مشخص نشده است");
         setLoading(false);
         return;
       }
+
+      // نرمال‌سازی اسلاگ: ممکن است params.slug از قبل percent-encoded باشد یا نباشد.
+      // اینجا مطمئن می‌شویم فقط یک‌بار encode شود تا از double-encoding جلوگیری شود
+      // (باگی که باعث می‌شد /property/آپارتمان-... با ۴۰۴ مواجه شود)
+      let slug = rawSlug;
+      try {
+        slug = decodeURIComponent(rawSlug);
+      } catch {
+        // اگر decode ناموفق بود، همان مقدار خام استفاده شود
+      }
+
+      console.log("🔍 جستجوی آگهی با slug:", slug);
 
       try {
         // جستجوی آگهی بر اساس slug (این API خودش fallback به id را هم پشتیبانی می‌کند)
@@ -211,11 +221,6 @@ export default function PropertyDetailPage() {
           <IoArrowBack />
           بازگشت
         </button>
-
-        {/* <div className="text-sm text-gray-500">
-          <span>آگهی شماره: </span>
-          <span className="font-mono bg-gray-100 px-2 py-1 rounded">{property.id.substring(0, 8)}...</span>
-        </div> */}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
