@@ -204,7 +204,7 @@ export default function PropertyDetailPage() {
   // رنگ شاخص: فیروزه‌ای تیره، الهام‌گرفته از کاشی‌کاری ایرانی — برای قیمت و اکشن اصلی
   // رنگ فرعی گرم: برای تگ «اجاره» و لمس‌های ثانویه
   const palette = {
-    page: "#FAF8F4",
+    page: "#ffffff",
     ink: "#17242A",
     muted: "#6B6259",
     hair: "#E7E2D9",
@@ -531,9 +531,8 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* ستون کناری — قیمت و تماس، به‌صورت sticky در دسکتاپ */}
-          <div className="lg:w-1/3">
+          {/* <div className="lg:w-1/3">
             <div className="lg:sticky lg:top-6 space-y-4">
-              {/* پنل قیمت — تنها بخش پررنگ صفحه */}
               <div
                 className="rounded-2xl p-6 text-white"
                 style={{ backgroundColor: palette.accent }}
@@ -557,7 +556,6 @@ export default function PropertyDetailPage() {
                 )}
               </div>
 
-              {/* پنل تماس — کم‌رنگ و ساده، بدون سایه‌ی تکراری */}
               {property.phone && (
                 <div className="rounded-2xl p-6 border" style={{ borderColor: palette.hair }}>
                   <h3 className="font-semibold mb-3">اطلاعات تماس</h3>
@@ -595,7 +593,7 @@ export default function PropertyDetailPage() {
                 آگهی‌های دیگر
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
