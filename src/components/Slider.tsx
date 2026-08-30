@@ -113,9 +113,8 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   <Image
                     src={getFirstImage(p.images)}
                     fill
-                    sizes="(max-width: 640px) 80vw, 300px"
                     alt={p.title || "تصویر ملک"}
-
+                    className="w-full h-full"
                   />
 
                   {/* Overlay */}
