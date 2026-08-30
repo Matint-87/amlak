@@ -256,13 +256,6 @@ export default function PropertyDetailPage() {
                     {/* پس‌زمینه محو‌شده از خود تصویر، برای پر کردن فضای خالی بدون برش زدن عکس اصلی */}
                     <img
                       src={property.images[index]}
-                      alt=""
-                      aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60"
-                    />
-                    {/* تصویر اصلی، کامل و بدون برش نمایش داده می‌شود */}
-                    <img
-                      src={property.images[index]}
                       alt={property.title}
                       className="relative w-full h-full object-contain"
                       onError={(e) => {
