@@ -13,9 +13,9 @@ export interface Property {
   address?: string | null;
   description?: string | null;
   phone?: string | null;
-  price?: number | null;
-  rent?: number | null;
-  deposit?: number | null;
+  price?: number | string | null;
+  rent?: number | string | null;
+  deposit?: number | string | null;
   type: string;
   images?: string[];
   meter?: number | null;
@@ -130,9 +130,17 @@ export default function PropertyDetailPage() {
     fetchProperty();
   }, [params.slug, router]);
 
-  const formatPrice = (price?: number | null) => {
-    if (!price) return "توافقی";
-    return new Intl.NumberFormat("fa-IR").format(price) + " تومان";
+  // مقدار قیمت از دیتابیس ممکن است رشته باشد (ستون NUMERIC)، پس هم null/undefined/""
+  // و هم رشته‌ی عددی "0" باید به‌عنوان «توافقی» تشخیص داده شوند.
+  const formatPrice = (price?: number | string | null) => {
+    if (price === null || price === undefined || price === "") {
+      return "توافقی";
+    }
+    const numPrice = Number(price);
+    if (Number.isNaN(numPrice) || numPrice === 0) {
+      return "توافقی";
+    }
+    return new Intl.NumberFormat("fa-IR").format(numPrice) + " تومان";
   };
 
   const getDealTypeText = (type: string) => {
@@ -452,14 +460,12 @@ export default function PropertyDetailPage() {
                   <p className="text-gray-600">اجاره ماهانه</p>
                 </div>
 
-                {property.deposit && (
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-xl font-semibold text-gray-700 mb-1">
-                      {formatPrice(property.deposit)}
-                    </div>
-                    <p className="text-gray-600">ودیعه</p>
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="text-xl font-semibold text-gray-700 mb-1">
+                    {formatPrice(property.deposit)}
                   </div>
-                )}
+                  <p className="text-gray-600">ودیعه</p>
+                </div>
               </div>
             )}
           </div>

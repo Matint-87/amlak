@@ -121,6 +121,9 @@ const PropertyModal = ({
               disabled={loading}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              برای نمایش «توافقی» عدد ۰ وارد کنید
+            </p>
           </div>
         );
       case "rent":
@@ -138,6 +141,9 @@ const PropertyModal = ({
                 disabled={loading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                برای نمایش «توافقی» عدد ۰ وارد کنید
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -151,6 +157,9 @@ const PropertyModal = ({
                 disabled={loading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                برای نمایش «توافقی» عدد ۰ وارد کنید
+              </p>
             </div>
           </>
         );
@@ -240,17 +249,18 @@ const PropertyModal = ({
     }
 
     if (formData.type === "buy") {
-      if (!formData.price || formData.price <= 0) {
-        alert("لطفا قیمت فروش را وارد کنید");
+      // اجازه بده قیمت صفر باشد (یعنی توافقی) — فقط خالی بودن یا منفی بودن رد می‌شود
+      if (formData.price === null || formData.price === undefined || formData.price < 0) {
+        alert("لطفا قیمت فروش را وارد کنید (برای توافقی، عدد ۰ وارد کنید)");
         return false;
       }
     } else if (formData.type === "rent") {
-      if (!formData.rent || formData.rent <= 0) {
-        alert("لطفا اجاره ماهانه را وارد کنید");
+      if (formData.rent === null || formData.rent === undefined || formData.rent < 0) {
+        alert("لطفا اجاره ماهانه را وارد کنید (برای توافقی، عدد ۰ وارد کنید)");
         return false;
       }
-      if (!formData.deposit || formData.deposit <= 0) {
-        alert("لطفا ودیعه را وارد کنید");
+      if (formData.deposit === null || formData.deposit === undefined || formData.deposit < 0) {
+        alert("لطفا ودیعه را وارد کنید (برای توافقی، عدد ۰ وارد کنید)");
         return false;
       }
     }
