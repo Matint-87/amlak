@@ -114,7 +114,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                     src={getFirstImage(p.images)}
                     fill
                     alt={p.title || "تصویر ملک"}
-                    className="w-full h-full"
+                    className="w-full h-full object-cover"
                   />
 
                   {/* Overlay */}
