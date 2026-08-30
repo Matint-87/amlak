@@ -115,9 +115,7 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                     fill
                     sizes="(max-width: 640px) 80vw, 300px"
                     alt={p.title || "تصویر ملک"}
-                    className="
-                      object-cover
-                    "
+
                   />
 
                   {/* Overlay */}
