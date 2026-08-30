@@ -94,11 +94,19 @@ export default function RentPage() {
                 href={`/property/${p.slug}`}
                 className="backdrop-blur-lg bg-white rounded-2xl p-6 w-80 shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl block"
               >
-                <img
-                  src={p.images?.[0] || "/hero.jpg"}
-                  alt={p.title}
-                  className="w-full h-48 object-cover rounded-xl mb-4"
-                />
+                <div className="relative w-full h-48 rounded-xl overflow-hidden mb-4 bg-gray-100">
+                  <img
+                    src={p.images?.[0] || "/hero.jpg"}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60"
+                  />
+                  <img
+                    src={p.images?.[0] || "/hero.jpg"}
+                    alt={p.title}
+                    className="relative w-full h-full object-contain"
+                  />
+                </div>
 
                 <h3 className="text-xl font-semibold mb-2">{p.title}</h3>
                 <p className="text-sm opacity-90 mb-1">
