@@ -222,7 +222,10 @@ export default function PropertyDetailPage() {
       >
         <div
           className="animate-spin rounded-full h-10 w-10 border-2 border-t-transparent mx-auto"
-          style={{ borderColor: `${palette.accent}33`, borderTopColor: palette.accent }}
+          style={{
+            borderColor: `${palette.accent}33`,
+            borderTopColor: palette.accent,
+          }}
         ></div>
         <p className="mt-4" style={{ color: palette.muted }}>
           در حال بارگذاری آگهی...
@@ -313,7 +316,12 @@ export default function PropertyDetailPage() {
             className="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors border text-sm"
             style={{ borderColor: palette.hair, color: palette.muted }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -354,9 +362,7 @@ export default function PropertyDetailPage() {
               {/* عنوان و برچسب معامله، روی خودِ تصویر */}
               <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 flex items-end justify-between gap-3 pointer-events-none">
                 <div>
-                  <span
-                    className="inline-block px-3 py-1 rounded-full text-xs mb-2 border border-white/30 bg-white/10 backdrop-blur-sm text-white"
-                  >
+                  <span className="inline-block px-3 py-1 rounded-full text-xs mb-2 border border-white/30 bg-white/10 backdrop-blur-sm text-white">
                     {getDealTypeText(property.type)}
                   </span>
                   <h1 className="text-xl md:text-2xl font-bold text-white leading-snug drop-shadow-sm">
@@ -456,7 +462,12 @@ export default function PropertyDetailPage() {
               >
                 {property.meter && (
                   <div className="flex items-center gap-1.5">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -469,12 +480,20 @@ export default function PropertyDetailPage() {
                 )}
 
                 {property.meter && property.created_at && (
-                  <div className="w-px h-4" style={{ backgroundColor: palette.hair }} />
+                  <div
+                    className="w-px h-4"
+                    style={{ backgroundColor: palette.hair }}
+                  />
                 )}
 
                 {property.created_at && (
                   <div className="flex items-center gap-1.5">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -490,7 +509,10 @@ export default function PropertyDetailPage() {
 
             {/* آدرس */}
             {property.address && (
-              <div className="pb-5 mb-5 border-b" style={{ borderColor: palette.hair }}>
+              <div
+                className="pb-5 mb-5 border-b"
+                style={{ borderColor: palette.hair }}
+              >
                 <div className="flex items-start gap-2.5">
                   <svg
                     className="w-5 h-5 mt-1 flex-shrink-0"
@@ -523,7 +545,10 @@ export default function PropertyDetailPage() {
             {property.description && (
               <div>
                 <h3 className="font-semibold mb-2.5">توضیحات</h3>
-                <p className="leading-relaxed whitespace-pre-line" style={{ color: palette.muted }}>
+                <p
+                  className="leading-relaxed whitespace-pre-line"
+                  style={{ color: palette.muted }}
+                >
                   {property.description}
                 </p>
               </div>
@@ -531,7 +556,7 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* ستون کناری — قیمت و تماس، به‌صورت sticky در دسکتاپ */}
-          {/* <div className="lg:w-1/3">
+          <div className="lg:w-1/3">
             <div className="lg:sticky lg:top-6 space-y-4">
               <div
                 className="rounded-2xl p-6 text-white"
@@ -540,22 +565,28 @@ export default function PropertyDetailPage() {
                 {isBuy ? (
                   <div>
                     <p className="text-sm text-white/70 mb-1">قیمت فروش</p>
-                    <div className="text-3xl font-bold">{formatPrice(property.price)}</div>
+                    <div className="text-3xl font-bold">
+                      {formatPrice(property.price)}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div>
                       <p className="text-sm text-white/70 mb-1">اجاره ماهانه</p>
-                      <div className="text-2xl font-bold">{formatPrice(property.rent)}</div>
+                      <div className="text-2xl font-bold">
+                        {formatPrice(property.rent)}
+                      </div>
                     </div>
                     <div className="pt-4 border-t border-white/20">
                       <p className="text-sm text-white/70 mb-1">ودیعه</p>
-                      <div className="text-xl font-semibold">{formatPrice(property.deposit)}</div>
+                      <div className="text-xl font-semibold">
+                        {formatPrice(property.deposit)}
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
-
+              {/* 
               {property.phone && (
                 <div className="rounded-2xl p-6 border" style={{ borderColor: palette.hair }}>
                   <h3 className="font-semibold mb-3">اطلاعات تماس</h3>
@@ -583,7 +614,7 @@ export default function PropertyDetailPage() {
                     تماس بگیرید
                   </button>
                 </div>
-              )}
+              )} */}
 
               <button
                 onClick={() => router.push("/")}
@@ -593,7 +624,7 @@ export default function PropertyDetailPage() {
                 آگهی‌های دیگر
               </button>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
 
