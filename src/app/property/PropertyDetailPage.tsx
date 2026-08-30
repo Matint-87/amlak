@@ -34,12 +34,22 @@ export default function PropertyDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false); // کنترل باز/بسته بودن نمایش تمام‌صفحه
 
   useEffect(() => {
+    // این پرچم برای جلوگیری از race condition هست: اگه این افکت دوباره اجرا بشه
+    // (مثلاً به خاطر Strict Mode در حالت dev که هر افکت رو دوبار اجرا می‌کنه، یا
+    // تغییر سریع params.slug)، ممکنه دو تا فراخوانی fetchProperty هم‌زمان در حال
+    // اجرا باشن. اگه fetch قدیمی‌تر دیرتر resolve بشه و با خطا/۴۰۴ برگرده، همون
+    // نتیجه‌ی درستِ فچ جدید رو با یه خطای اشتباه بازنویسی می‌کنه (همون فلش کوتاه
+    // "آگهی پیدا نشد" که می‌بینی، قبل از اینکه دیتای واقعی درست بشینه).
+    // با ignore، فقط آخرین اجرای معتبرِ افکت اجازه‌ی setState داره.
+    let ignore = false;
+
     const fetchProperty = async () => {
       // مهم: هر بار که این افکت دوباره اجرا میشه (مثلاً params.slug عوض میشه)
       // باید وضعیت رو ریست کنیم به loading=true و error/property=null.
       // در غیر این صورت، تا وقتی فچ جدید تموم بشه، چون loading از دفعه‌ی قبل
       // false مونده و property هنوز null هست، شرط "not found" زودتر از موقع
       // نمایش داده میشه (فلش کوتاه "آگهی پیدا نشد" قبل از لود واقعی)
+      if (ignore) return;
       setLoading(true);
       setError(null);
       setProperty(null);
@@ -47,8 +57,10 @@ export default function PropertyDetailPage() {
       const rawSlug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
       if (!rawSlug) {
-        setError("آدرس آگهی مشخص نشده است");
-        setLoading(false);
+        if (!ignore) {
+          setError("آدرس آگهی مشخص نشده است");
+          setLoading(false);
+        }
         return;
       }
 
@@ -74,18 +86,24 @@ export default function PropertyDetailPage() {
         );
 
         if (res.status === 404) {
-          setError("آگهی پیدا نشد");
-          setLoading(false);
+          if (!ignore) {
+            setError("آگهی پیدا نشد");
+            setLoading(false);
+          }
           return;
         }
 
         if (!res.ok) {
-          setError("خطا در دریافت اطلاعات");
-          setLoading(false);
+          if (!ignore) {
+            setError("خطا در دریافت اطلاعات");
+            setLoading(false);
+          }
           return;
         }
 
         const { data, redirectSlug } = await res.json();
+
+        if (ignore) return; // این اجرا دیگه معتبر نیست (افکت جدیدتری شروع شده)
 
         if (redirectSlug && redirectSlug !== slug) {
           // لینک قدیمی بود (id به‌جای slug)، به آدرس درست redirect کن
@@ -133,15 +151,23 @@ export default function PropertyDetailPage() {
           created_at: data.created_at,
         });
         setIndex(0); // با تعویض آگهی، ایندکس گالری تصاویر هم ریست بشه
-      } catch (err: any) {
-        console.error("خطای غیرمنتظره:", err);
-        setError("خطا در دریافت اطلاعات");
-      } finally {
         setLoading(false);
+      } catch (err: any) {
+        if (!ignore) {
+          console.error("خطای غیرمنتظره:", err);
+          setError("خطا در دریافت اطلاعات");
+          setLoading(false);
+        }
       }
     };
 
     fetchProperty();
+
+    // Cleanup: وقتی افکت دوباره اجرا میشه یا کامپوننت unmount میشه،
+    // این اجرای قبلی رو "نامعتبر" علامت بزن تا دیگه state رو دستکاری نکنه
+    return () => {
+      ignore = true;
+    };
   }, [params.slug, router]);
 
   // مقدار قیمت از دیتابیس ممکن است رشته باشد (ستون NUMERIC)، پس هم null/undefined/""
