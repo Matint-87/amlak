@@ -35,6 +35,15 @@ export default function PropertyDetailPage() {
 
   useEffect(() => {
     const fetchProperty = async () => {
+      // مهم: هر بار که این افکت دوباره اجرا میشه (مثلاً params.slug عوض میشه)
+      // باید وضعیت رو ریست کنیم به loading=true و error/property=null.
+      // در غیر این صورت، تا وقتی فچ جدید تموم بشه، چون loading از دفعه‌ی قبل
+      // false مونده و property هنوز null هست، شرط "not found" زودتر از موقع
+      // نمایش داده میشه (فلش کوتاه "آگهی پیدا نشد" قبل از لود واقعی)
+      setLoading(true);
+      setError(null);
+      setProperty(null);
+
       const rawSlug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
       if (!rawSlug) {
@@ -80,6 +89,8 @@ export default function PropertyDetailPage() {
 
         if (redirectSlug && redirectSlug !== slug) {
           // لینک قدیمی بود (id به‌جای slug)، به آدرس درست redirect کن
+          // توجه: loading رو true نگه می‌داریم تا صفحه‌ی مقصد لود بشه
+          // (به جای false کردنش که باعث میشد لحظه‌ای صفحه‌ی "پیدا نشد" دیده بشه)
           router.replace(`/property/${redirectSlug}`);
           return;
         }
@@ -121,6 +132,7 @@ export default function PropertyDetailPage() {
           slug: data.slug,
           created_at: data.created_at,
         });
+        setIndex(0); // با تعویض آگهی، ایندکس گالری تصاویر هم ریست بشه
       } catch (err: any) {
         console.error("خطای غیرمنتظره:", err);
         setError("خطا در دریافت اطلاعات");
