@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MdOutlineRealEstateAgent } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { FaHouseChimney, FaKey } from "react-icons/fa6";
+import SearchBar from "./SearchBar";
 function Navbar() {
   const pathName = usePathname();
 
@@ -15,11 +16,9 @@ function Navbar() {
             <MdOutlineRealEstateAgent />
             املاک شاپور
           </Link>
-          {/* <div className="mobile:hidden laptop:flex">
-            <FilterBar defaultType={pathName === "/sale" ? "buy" : "rent"} />
-          </div> */}
         </div>
         <div className="flex justify-center p-2 mobile:gap-3 tablet:gap-5">
+          <SearchBar />
           <Link
             href="/sale"
             className={
