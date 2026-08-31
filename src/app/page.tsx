@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 async function getLatestAds() {
   try {
     const result = await query(
-      `SELECT * FROM properties ORDER BY id DESC LIMIT 10`
+      `SELECT * FROM properties ORDER BY id DESC LIMIT 10`,
     );
 
     return result.rows.map((ad: any) => ({
@@ -29,8 +29,8 @@ export default async function Page() {
     <div>
       <Hero />
       <div className="w-full my-[100px] h-[350px] mobile:px-5 laptop:px-0 flex items-center justify-center">
-        <CategorySection />
         <div className="mobile:w-full laptop:w-[70%] h-full">
+          <CategorySection />
           <span className="text-2xl">آگهی های جدید</span>
           <Slider ads={ads} />
         </div>
