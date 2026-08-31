@@ -7,6 +7,7 @@ import { GrFormPrevious } from "react-icons/gr";
 import { IoArrowBack } from "react-icons/io5";
 import Link from "next/link";
 import ImageLightbox from "@/src/components/ImageLightbox";
+import { FiShare2 } from "react-icons/fi";
 
 export interface Property {
   id: string;
@@ -308,19 +309,7 @@ export default function PropertyDetailPage() {
             className="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors border text-sm"
             style={{ borderColor: palette.hair, color: palette.muted }}
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M8.684 13.342a4.986 4.986 0 000 2.316m0-2.316a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 2.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684zm5.367-6.684a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684z"
-              />
-            </svg>
+            <FiShare2 />
             اشتراک‌گذاری
           </button>
         </div>
