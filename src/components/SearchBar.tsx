@@ -8,6 +8,7 @@ import {
   HiOutlineSearch,
   HiOutlineX,
   HiOutlineArrowsExpand,
+  HiOutlineCurrencyDollar,
 } from "react-icons/hi";
 
 function SearchBar() {
@@ -18,6 +19,8 @@ function SearchBar() {
   const [location, setLocation] = useState("");
   const [meterMin, setMeterMin] = useState("");
   const [meterMax, setMeterMax] = useState("");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
   const [type, setType] = useState<"all" | "buy" | "rent">("all");
   const [open, setOpen] = useState(false);
 
@@ -47,7 +50,13 @@ function SearchBar() {
   }, [open]);
 
   const hasFilters =
-    q.trim() || location.trim() || meterMin || meterMax || type !== "all";
+    q.trim() ||
+    location.trim() ||
+    meterMin ||
+    meterMax ||
+    priceMin ||
+    priceMax ||
+    type !== "all";
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -55,6 +64,8 @@ function SearchBar() {
     if (location.trim()) params.set("location", location.trim());
     if (meterMin) params.set("meterMin", meterMin);
     if (meterMax) params.set("meterMax", meterMax);
+    if (priceMin) params.set("priceMin", priceMin);
+    if (priceMax) params.set("priceMax", priceMax);
     if (type !== "all") params.set("type", type);
 
     router.push(`/search?${params.toString()}`);
@@ -66,12 +77,16 @@ function SearchBar() {
     setLocation("");
     setMeterMin("");
     setMeterMax("");
+    setPriceMin("");
+    setPriceMax("");
     setType("all");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSearch();
   };
+
+  const priceLabel = type === "rent" ? "رهن (تومان)" : "قیمت (تومان)";
 
   return (
     <div ref={wrapperRef}>
@@ -214,6 +229,33 @@ function SearchBar() {
               placeholder="تا"
               value={meterMax}
               onChange={(e) => setMeterMax(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-[#0BA6DF] focus:ring-2 focus:ring-[#0BA6DF]/15 transition-all"
+            />
+          </div>
+        </div>
+
+        {/* قیمت */}
+        <div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1.5 mr-1">
+            <HiOutlineCurrencyDollar size={14} />
+            {priceLabel}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              placeholder="از"
+              value={priceMin}
+              onChange={(e) => setPriceMin(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-[#0BA6DF] focus:ring-2 focus:ring-[#0BA6DF]/15 transition-all"
+            />
+            <span className="text-gray-300 text-sm">—</span>
+            <input
+              type="number"
+              placeholder="تا"
+              value={priceMax}
+              onChange={(e) => setPriceMax(e.target.value)}
               onKeyDown={handleKeyDown}
               className="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-[#0BA6DF] focus:ring-2 focus:ring-[#0BA6DF]/15 transition-all"
             />

@@ -28,7 +28,7 @@ function normalizePersian(s: string): string {
 const TRANSLATE_FROM = "يئىكآأإ";
 const TRANSLATE_TO = "یییکااا";
 
-// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&titleAny=خانه,ویلا&meterMin=50&meterMax=120&order=created_at|id&limit=10&count=1
+// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&titleAny=خانه,ویلا&meterMin=50&meterMax=120&priceMin=100&priceMax=500&order=created_at|id&limit=10&count=1
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -38,6 +38,8 @@ export async function GET(request: NextRequest) {
     const titleAny = searchParams.get("titleAny"); // مثلا: "خانه,ویلا"
     const meterMin = searchParams.get("meterMin");
     const meterMax = searchParams.get("meterMax");
+    const priceMin = searchParams.get("priceMin");
+    const priceMax = searchParams.get("priceMax");
     const order = searchParams.get("order") === "created_at" ? "created_at" : "id";
     const limitParam = searchParams.get("limit");
     const countOnly = searchParams.get("count") === "1";
@@ -95,6 +97,33 @@ export async function GET(request: NextRequest) {
       if (Number.isFinite(meterValue)) {
         params.push(meterValue);
         conditions.push(`meter <= $${params.length}`);
+      }
+    }
+
+    // فیلتر قیمت: اگه type دقیقاً "buy" یا "rent" باشه فقط رو ستون مربوطه،
+    // وگرنه (type=all یا خالی) رو هر دو ستون price و deposit با OR
+    if (priceMin || priceMax) {
+      const priceColumns =
+        type === "buy" ? ["price"] : type === "rent" ? ["deposit"] : ["price", "deposit"];
+
+      if (priceMin) {
+        const priceValue = Number(priceMin);
+        if (Number.isFinite(priceValue)) {
+          params.push(priceValue);
+          const idx = params.length;
+          const orParts = priceColumns.map((col) => `${col} >= $${idx}`);
+          conditions.push(`(${orParts.join(" OR ")})`);
+        }
+      }
+
+      if (priceMax) {
+        const priceValue = Number(priceMax);
+        if (Number.isFinite(priceValue)) {
+          params.push(priceValue);
+          const idx = params.length;
+          const orParts = priceColumns.map((col) => `${col} <= $${idx}`);
+          conditions.push(`(${orParts.join(" OR ")})`);
+        }
       }
     }
 

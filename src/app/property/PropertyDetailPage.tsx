@@ -34,21 +34,9 @@ export default function PropertyDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false); // کنترل باز/بسته بودن نمایش تمام‌صفحه
 
   useEffect(() => {
-    // این پرچم برای جلوگیری از race condition هست: اگه این افکت دوباره اجرا بشه
-    // (مثلاً به خاطر Strict Mode در حالت dev که هر افکت رو دوبار اجرا می‌کنه، یا
-    // تغییر سریع params.slug)، ممکنه دو تا فراخوانی fetchProperty هم‌زمان در حال
-    // اجرا باشن. اگه fetch قدیمی‌تر دیرتر resolve بشه و با خطا/۴۰۴ برگرده، همون
-    // نتیجه‌ی درستِ فچ جدید رو با یه خطای اشتباه بازنویسی می‌کنه (همون فلش کوتاه
-    // "آگهی پیدا نشد" که می‌بینی، قبل از اینکه دیتای واقعی درست بشینه).
-    // با ignore، فقط آخرین اجرای معتبرِ افکت اجازه‌ی setState داره.
     let ignore = false;
 
     const fetchProperty = async () => {
-      // مهم: هر بار که این افکت دوباره اجرا میشه (مثلاً params.slug عوض میشه)
-      // باید وضعیت رو ریست کنیم به loading=true و error/property=null.
-      // در غیر این صورت، تا وقتی فچ جدید تموم بشه، چون loading از دفعه‌ی قبل
-      // false مونده و property هنوز null هست، شرط "not found" زودتر از موقع
-      // نمایش داده میشه (فلش کوتاه "آگهی پیدا نشد" قبل از لود واقعی)
       if (ignore) return;
       setLoading(true);
       setError(null);
@@ -63,21 +51,12 @@ export default function PropertyDetailPage() {
         }
         return;
       }
-
-      // نرمال‌سازی اسلاگ: ممکن است params.slug از قبل percent-encoded باشد یا نباشد.
-      // اینجا مطمئن می‌شویم فقط یک‌بار encode شود تا از double-encoding جلوگیری شود
-      // (باگی که باعث می‌شد /property/آپارتمان-... با ۴۰۴ مواجه شود)
       let slug = rawSlug;
       try {
         slug = decodeURIComponent(rawSlug);
-      } catch {
-        // اگر decode ناموفق بود، همان مقدار خام استفاده شود
-      }
-
-      console.log("🔍 جستجوی آگهی با slug:", slug);
+      } catch {}
 
       try {
-        // جستجوی آگهی بر اساس slug (این API خودش fallback به id را هم پشتیبانی می‌کند)
         const res = await fetch(
           `/api/properties/slug/${encodeURIComponent(slug)}`,
           {
@@ -103,12 +82,9 @@ export default function PropertyDetailPage() {
 
         const { data, redirectSlug } = await res.json();
 
-        if (ignore) return; // این اجرا دیگه معتبر نیست (افکت جدیدتری شروع شده)
+        if (ignore) return;
 
         if (redirectSlug && redirectSlug !== slug) {
-          // لینک قدیمی بود (id به‌جای slug)، به آدرس درست redirect کن
-          // توجه: loading رو true نگه می‌داریم تا صفحه‌ی مقصد لود بشه
-          // (به جای false کردنش که باعث میشد لحظه‌ای صفحه‌ی "پیدا نشد" دیده بشه)
           router.replace(`/property/${redirectSlug}`);
           return;
         }
@@ -308,10 +284,26 @@ export default function PropertyDetailPage() {
           </button>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               const url = window.location.href;
-              navigator.clipboard.writeText(url);
-              alert("لینک کپی شد!");
+              const shareData = {
+                title: property.title,
+                text: `${property.title} - ${property.address || ""}`,
+                url,
+              };
+
+              // اگه مرورگر از Web Share API پشتیبانی کنه (اکثر گوشی‌ها)، شیت native باز میشه
+              if (navigator.share) {
+                try {
+                  await navigator.share(shareData);
+                } catch (err) {
+                  // کاربر خودش شیت رو بسته یا لغو کرده، نیازی به نمایش خطا نیست
+                }
+              } else {
+                // فال‌بک برای دسکتاپ/مرورگرهایی که Web Share ندارن
+                navigator.clipboard.writeText(url);
+                alert("لینک کپی شد!");
+              }
             }}
             className="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors border text-sm"
             style={{ borderColor: palette.hair, color: palette.muted }}
@@ -326,10 +318,10 @@ export default function PropertyDetailPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                d="M8.684 13.342a4.986 4.986 0 000 2.316m0-2.316a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 2.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684zm5.367-6.684a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684z"
               />
             </svg>
-            کپی لینک
+            اشتراک‌گذاری
           </button>
         </div>
 
@@ -586,36 +578,6 @@ export default function PropertyDetailPage() {
                   </div>
                 )}
               </div>
-              {/* 
-              {property.phone && (
-                <div className="rounded-2xl p-6 border" style={{ borderColor: palette.hair }}>
-                  <h3 className="font-semibold mb-3">اطلاعات تماس</h3>
-                  <div
-                    className="flex items-center gap-2.5 pb-4 mb-4 border-b"
-                    style={{ borderColor: palette.hair }}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke={palette.muted} viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      />
-                    </svg>
-                    <span className="font-semibold">{property.phone}</span>
-                  </div>
-                  <button
-                    onClick={() => window.open(`tel:${property.phone}`)}
-                    className="w-full py-3 rounded-lg font-semibold text-white transition-colors"
-                    style={{ backgroundColor: palette.accent }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = palette.accentDark)}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = palette.accent)}
-                  >
-                    تماس بگیرید
-                  </button>
-                </div>
-              )} */}
-
               <button
                 onClick={() => router.push("/")}
                 className="w-full py-2.5 rounded-lg border transition-colors text-sm"

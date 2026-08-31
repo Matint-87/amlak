@@ -28,7 +28,7 @@ function Navbar() {
             }
           >
             خرید
-            <FaHouseChimney />
+            <FaHouseChimney className="mobile:hidden tablet:flex" />
           </Link>
           <Link
             href="/rent"
@@ -39,7 +39,7 @@ function Navbar() {
             }
           >
             اجاره
-            <FaKey />
+            <FaKey className="mobile:hidden tablet:flex"/>
           </Link>
         </div>
       </div>

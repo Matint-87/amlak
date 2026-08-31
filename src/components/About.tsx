@@ -6,7 +6,7 @@ export default function About() {
       <div className="mx-auto max-w-6xl flex mobile:flex-col mobile:items-center laptop:items-start laptop:flex-row gap-10">
         <div className="space-y-4 text-right mobile:px-10 laptop:px-0">
           <h2 className="text-2xl font-bold">
-            همراه مطمئن شما در معاملات ملکی
+           
           </h2>
           <p className="text-gray-600 leading-relaxed laptop:w-[500px]">
             چه خریدار اولین خانه خود باشید، چه به دنبال سرمایه‌گذاری هوشمند،
@@ -14,7 +14,7 @@ export default function About() {
             ابزارها و همراهی متخصصان ما در تمام این مسیر کنار شماست.
           </p>
         </div>
-        <div className="mobile:px-10 laptop:px-0 w-full h-[300px] overflow-hidden rounded-lg">
+        <div className="mobile:px-10 laptop:px-0 w-full h-[300px] overflow-hidden rounded-lg flex justify-center items-center">
             <Location/>
         </div>
       </div>

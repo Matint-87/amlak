@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FaBuilding, FaHouseChimney } from "react-icons/fa6";
+import { FaBuilding, FaHouseChimney, FaHardHat } from "react-icons/fa6";
 import { GiCrane } from "react-icons/gi";
 import { MdStorefront } from "react-icons/md";
 
 interface Category {
   label: string;
   icon: React.ReactNode;
-  keywords: string[]; 
+  keywords: string[];
 }
 
 const categories: Category[] = [
@@ -32,6 +32,11 @@ const categories: Category[] = [
     icon: <GiCrane size={26} />,
     keywords: ["تجاری", "مغازه", "اداری"],
   },
+  {
+    label: "پیش‌فروش",
+    icon: <FaHardHat size={26} />,
+    keywords: ["پیش فروش", "پیش‌فروش", "پیشفروش"],
+  },
 ];
 
 function CategorySection() {
@@ -50,7 +55,7 @@ function CategorySection() {
         <h2 className="text-lg font-bold text-[#0a1e3f]">دسته‌بندی املاک</h2>
       </div>
 
-      <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 tablet:grid-cols-3 laptop:grid-cols-5 gap-3">
         {categories.map((category) => (
           <button
             key={category.label}
