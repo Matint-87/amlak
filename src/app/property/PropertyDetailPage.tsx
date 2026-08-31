@@ -8,6 +8,7 @@ import { IoArrowBack } from "react-icons/io5";
 import Link from "next/link";
 import ImageLightbox from "@/src/components/ImageLightbox";
 import { FiShare2 } from "react-icons/fi";
+import { HiStar } from "react-icons/hi2";
 
 export interface Property {
   id: string;
@@ -23,7 +24,20 @@ export interface Property {
   meter?: number | null;
   slug: string;
   created_at?: string;
+  status?: string;
+  is_featured?: boolean;
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  active: "فعال",
+  sold: "فروش رفته",
+  rented: "اجاره داده شده",
+  cancelled: "کنسل شده",
+  under_construction: "در حال ساخت",
+};
+
+// وضعیت‌هایی که یعنی آگهی دیگه معامله‌پذیر نیست
+const INACTIVE_STATUSES = ["sold", "rented", "cancelled"];
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -126,6 +140,8 @@ export default function PropertyDetailPage() {
           meter: data.meter,
           slug: data.slug,
           created_at: data.created_at,
+          status: data.status || "active",
+          is_featured: Boolean(data.is_featured),
         });
         setIndex(0); // با تعویض آگهی، ایندکس گالری تصاویر هم ریست بشه
         setLoading(false);
@@ -269,6 +285,9 @@ export default function PropertyDetailPage() {
   }
 
   const isBuy = property.type === "buy";
+  const status = property.status || "active";
+  const isInactive = INACTIVE_STATUSES.includes(status);
+  const statusLabel = STATUS_LABELS[status];
 
   return (
     <div style={{ backgroundColor: palette.page, color: palette.ink }}>
@@ -314,6 +333,23 @@ export default function PropertyDetailPage() {
           </button>
         </div>
 
+        {/* بنر هشدار وقتی آگهی دیگه فعال نیست */}
+        {isInactive && (
+          <div
+            className="mb-4 rounded-xl px-4 py-3 text-sm font-semibold flex items-center gap-2"
+            style={{
+              backgroundColor: `${palette.danger}14`,
+              color: palette.danger,
+              border: `1px solid ${palette.danger}33`,
+            }}
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.282 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            این آگهی «{statusLabel}» است و دیگر معامله‌پذیر نیست.
+          </div>
+        )}
+
         {/* گالری اصلی — تصویر تمام‌عرض با عنوان و قیمت روی خودِ تصویر */}
         {property.images && property.images.length > 0 ? (
           <div className="space-y-3 mb-6">
@@ -324,7 +360,7 @@ export default function PropertyDetailPage() {
               <img
                 src={property.images[index]}
                 alt={property.title}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${isInactive ? "grayscale-[35%]" : ""}`}
                 onError={(e) => {
                   e.currentTarget.src = "/placeholder.jpg";
                 }}
@@ -339,6 +375,27 @@ export default function PropertyDetailPage() {
                   <MdZoomIn size={26} />
                 </div>
               </div>
+
+              {/* نشان ویژه، بالای تصویر */}
+              {property.is_featured && (
+                <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                  <HiStar size={13} />
+                  ویژه
+                </div>
+              )}
+
+              {/* برچسب وضعیت، کنار شماره تصویر */}
+              {status !== "active" && (
+                <div
+                  className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm"
+                  style={{
+                    backgroundColor:
+                      status === "under_construction" ? palette.warm : palette.danger,
+                  }}
+                >
+                  {statusLabel}
+                </div>
+              )}
 
               {/* عنوان و برچسب معامله، روی خودِ تصویر */}
               <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 flex items-end justify-between gap-3 pointer-events-none">
@@ -381,7 +438,7 @@ export default function PropertyDetailPage() {
                     <MdNavigateNext size={22} />
                   </button>
 
-                  <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs">
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-xs">
                     {index + 1} / {property.images.length}
                   </div>
                 </>
@@ -541,7 +598,7 @@ export default function PropertyDetailPage() {
             <div className="lg:sticky lg:top-6 space-y-4">
               <div
                 className="rounded-2xl p-6 text-white"
-                style={{ backgroundColor: palette.accent }}
+                style={{ backgroundColor: isInactive ? palette.muted : palette.accent }}
               >
                 {isBuy ? (
                   <div>
@@ -565,6 +622,9 @@ export default function PropertyDetailPage() {
                       </div>
                     </div>
                   </div>
+                )}
+                {isInactive && (
+                  <p className="mt-3 text-xs text-white/80">این آگهی {statusLabel} است</p>
                 )}
               </div>
               <button
@@ -592,7 +652,15 @@ export default function PropertyDetailPage() {
             {formatPrice(isBuy ? property.price : property.rent)}
           </p>
         </div>
-        {property.phone ? (
+        {isInactive ? (
+          <button
+            disabled
+            className="px-6 py-2.5 rounded-lg font-semibold text-white cursor-not-allowed"
+            style={{ backgroundColor: palette.muted }}
+          >
+            {statusLabel}
+          </button>
+        ) : property.phone ? (
           <button
             onClick={() => window.open(`tel:${property.phone}`)}
             className="px-6 py-2.5 rounded-lg font-semibold text-white"
