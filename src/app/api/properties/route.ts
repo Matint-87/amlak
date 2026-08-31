@@ -78,6 +78,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type");
     const q = searchParams.get("q");
     const location = searchParams.get("location");
+    const titleAny = searchParams.get("titleAny"); // مثلا: "خانه,ویلا"
     const meterMin = searchParams.get("meterMin");
     const meterMax = searchParams.get("meterMax");
     const order = searchParams.get("order") === "created_at" ? "created_at" : "id";
@@ -103,6 +104,21 @@ export async function GET(request: NextRequest) {
       conditions.push(
         `(title ILIKE $${idx} OR address ILIKE $${idx} OR description ILIKE $${idx})`
       );
+    }
+
+    if (titleAny && titleAny.trim()) {
+      const keywords = titleAny
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean);
+
+      if (keywords.length) {
+        const orConditions = keywords.map((kw) => {
+          params.push(`%${kw}%`);
+          return `title ILIKE $${params.length}`;
+        });
+        conditions.push(`(${orConditions.join(" OR ")})`);
+      }
     }
 
     if (meterMin) {

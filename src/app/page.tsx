@@ -1,4 +1,5 @@
 import About from "../components/About";
+import CategorySection from "../components/CategorySection";
 import Hero from "../components/Hero";
 import Slider from "../components/Slider";
 import { query } from "@/src/lib/db";
@@ -28,6 +29,7 @@ export default async function Page() {
     <div>
       <Hero />
       <div className="w-full my-[100px] h-[350px] mobile:px-5 laptop:px-0 flex items-center justify-center">
+        <CategorySection />
         <div className="mobile:w-full laptop:w-[70%] h-full">
           <span className="text-2xl">آگهی های جدید</span>
           <Slider ads={ads} />

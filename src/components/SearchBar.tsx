@@ -21,7 +21,6 @@ function SearchBar() {
   const [type, setType] = useState<"all" | "buy" | "rent">("all");
   const [open, setOpen] = useState(false);
 
-  // بستن با کلیک بیرون
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
@@ -34,6 +33,18 @@ function SearchBar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // جلوگیری از اسکرول پشت پنل وقتی توی موبایل بازه
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   const hasFilters =
     q.trim() || location.trim() || meterMin || meterMax || type !== "all";
@@ -63,10 +74,10 @@ function SearchBar() {
   };
 
   return (
-    <div className="relative" ref={wrapperRef}>
+    <div ref={wrapperRef}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={`flex items-center gap-2 mobile:px-3 tablet:px-5 py-2.5 rounded-full font-semibold shadow-md transition-all duration-200 ${
+        className={`relative flex items-center gap-2 mobile:px-3 tablet:px-5 py-2.5 rounded-full font-semibold shadow-md transition-all duration-200 ${
           open || hasFilters
             ? "bg-[#0BA6DF] text-white shadow-[#0BA6DF]/30"
             : "bg-white text-[#0BA6DF] hover:shadow-lg"
@@ -79,12 +90,29 @@ function SearchBar() {
         )}
       </button>
 
+      {/* بک‌دراپ فقط روی موبایل */}
       <div
-        className={`absolute top-[calc(100%+12px)] left-0 laptop:left-auto laptop:right-0 bg-white shadow-2xl ring-1 ring-black/5 rounded-2xl p-5 w-[320px] z-50 flex flex-col gap-4 origin-top-left laptop:origin-top-right transition-all duration-200 ${
-          open
-            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-200 laptop:hidden ${
+          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
+      />
+
+      {/* پنل: موبایل = fixed زیر navbar با عرض کامل / از تبلت به بالا = dropdown نسبی */}
+      <div
+        className={`
+          fixed z-50 bg-white shadow-2xl ring-1 ring-black/5
+          mobile:top-[110px] mobile:left-3 mobile:right-3 mobile:rounded-2xl mobile:w-auto
+          tablet:absolute tablet:top-[calc(100%+12px)] tablet:left-auto tablet:right-0
+          tablet:w-[320px] tablet:rounded-2xl
+          p-5 flex flex-col gap-4 origin-top
+          transition-all duration-200 max-h-[80vh] overflow-y-auto
+          ${
+            open
+              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+          }
+        `}
       >
         {/* هدر */}
         <div className="flex items-center justify-between">
@@ -92,15 +120,23 @@ function SearchBar() {
             <HiOutlineSearch className="text-[#0BA6DF]" size={20} />
             جستجوی ملک
           </h3>
-          {hasFilters && (
+          <div className="flex items-center gap-3">
+            {hasFilters && (
+              <button
+                onClick={handleReset}
+                className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+              >
+                <HiOutlineX size={14} />
+                پاک کردن
+              </button>
+            )}
             <button
-              onClick={handleReset}
-              className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+              onClick={() => setOpen(false)}
+              className="laptop:hidden text-gray-400 hover:text-gray-600"
             >
-              <HiOutlineX size={14} />
-              پاک کردن
+              <HiOutlineX size={20} />
             </button>
-          )}
+          </div>
         </div>
 
         {/* نوع معامله */}

@@ -37,7 +37,7 @@ function getFirstImage(images: string[] | string) {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
-  const { q, location, meterMin, meterMax } = params;
+  const { q, location, meterMin, meterMax, titleAny, type } = params;
 
   const url = new URL(
     "/api/properties",
@@ -47,12 +47,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   if (location) url.searchParams.set("location", location);
   if (meterMin) url.searchParams.set("meterMin", meterMin);
   if (meterMax) url.searchParams.set("meterMax", meterMax);
+  if (titleAny) url.searchParams.set("titleAny", titleAny);
+  if (type) url.searchParams.set("type", type);
 
   const res = await fetch(url, { cache: "no-store" });
   const { data } = await res.json();
   const ads: Ad[] = data || [];
 
-  const hasFilters = q || location || meterMin || meterMax;
+  const hasFilters = q || location || meterMin || meterMax || titleAny || type;
 
   return (
     <div className="flex flex-col items-center py-10 gap-6 mobile:px-4 laptop:px-0">
@@ -66,6 +68,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {hasFilters && (
           <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+            {titleAny && (
+              <span className="bg-gray-100 rounded-full px-3 py-1">
+                دسته: {titleAny.split(",")[0]}
+                {titleAny.split(",").length > 1 ? " و مشابه" : ""}
+              </span>
+            )}
+            {type && (
+              <span className="bg-gray-100 rounded-full px-3 py-1">
+                نوع: {type === "buy" ? "خرید" : "اجاره"}
+              </span>
+            )}
             {q && (
               <span className="bg-gray-100 rounded-full px-3 py-1">
                 عبارت: {q}
