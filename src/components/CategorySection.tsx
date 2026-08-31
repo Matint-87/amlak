@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FaBuilding, FaHouseChimney, FaHardHat } from "react-icons/fa6";
-import { GiCrane } from "react-icons/gi";
+import { FaBuilding, FaHouseChimney } from "react-icons/fa6";
+import { GiCrane, GiHardHat } from "react-icons/gi";
 import { MdStorefront } from "react-icons/md";
 
 interface Category {
@@ -34,7 +34,7 @@ const categories: Category[] = [
   },
   {
     label: "پیش‌فروش",
-    icon: <FaHardHat size={26} />,
+    icon: <GiHardHat size={26} />,
     keywords: ["پیش فروش", "پیش‌فروش", "پیشفروش"],
   },
 ];
