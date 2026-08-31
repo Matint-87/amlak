@@ -4,6 +4,9 @@ import { isAdminRequestAuthenticated } from "@/src/lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 
+const VALID_STATUSES = ["active", "sold", "rented", "cancelled", "under_construction"] as const;
+type PropertyStatus = (typeof VALID_STATUSES)[number];
+
 function makeSlug(title: string): string {
   const base = title
     .toLowerCase()
@@ -28,7 +31,7 @@ function normalizePersian(s: string): string {
 const TRANSLATE_FROM = "يئىكآأإ";
 const TRANSLATE_TO = "یییکااا";
 
-// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&titleAny=خانه,ویلا&meterMin=50&meterMax=120&priceMin=100&priceMax=500&order=created_at|id&limit=10&count=1
+// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&titleAny=خانه,ویلا&meterMin=50&meterMax=120&priceMin=100&priceMax=500&status=active&featured=1&order=created_at|id&limit=10&count=1
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -40,6 +43,9 @@ export async function GET(request: NextRequest) {
     const meterMax = searchParams.get("meterMax");
     const priceMin = searchParams.get("priceMin");
     const priceMax = searchParams.get("priceMax");
+    const status = searchParams.get("status"); // فعال/فروش رفته/اجاره داده شده/کنسل/در حال ساخت
+    const excludeStatus = searchParams.get("excludeStatus"); // مثلا برای سایت عمومی: excludeStatus=cancelled
+    const featured = searchParams.get("featured"); // "1" یعنی فقط ویژه‌ها
     const order = searchParams.get("order") === "created_at" ? "created_at" : "id";
     const limitParam = searchParams.get("limit");
     const countOnly = searchParams.get("count") === "1";
@@ -50,6 +56,20 @@ export async function GET(request: NextRequest) {
     if (type === "buy" || type === "rent") {
       params.push(type);
       conditions.push(`type = $${params.length}`);
+    }
+
+    if (status && (VALID_STATUSES as readonly string[]).includes(status)) {
+      params.push(status as PropertyStatus);
+      conditions.push(`status = $${params.length}`);
+    }
+
+    if (excludeStatus && (VALID_STATUSES as readonly string[]).includes(excludeStatus)) {
+      params.push(excludeStatus as PropertyStatus);
+      conditions.push(`status <> $${params.length}`);
+    }
+
+    if (featured === "1") {
+      conditions.push(`is_featured = true`);
     }
 
     if (location && location.trim()) {
@@ -137,7 +157,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ count: Number(result.rows[0]?.count ?? 0) });
     }
 
-    let sql = `SELECT * FROM properties ${where} ORDER BY ${order} DESC`;
+    // آگهی‌های ویژه همیشه اول لیست نمایش داده بشن، بعد بر اساس order انتخابی
+    let sql = `SELECT * FROM properties ${where} ORDER BY is_featured DESC, ${order} DESC`;
     if (limitParam) {
       const limitValue = Number(limitParam);
       if (Number.isFinite(limitValue) && limitValue > 0) {
@@ -176,6 +197,8 @@ export async function POST(request: NextRequest) {
       deposit = null,
       meter = null,
       images = [],
+      status = "active",
+      is_featured = false,
     } = body ?? {};
 
     if (!type || (type !== "buy" && type !== "rent")) {
@@ -187,13 +210,16 @@ export async function POST(request: NextRequest) {
     if (!meter || Number(meter) <= 0) {
       return NextResponse.json({ error: "متراژ الزامی است" }, { status: 400 });
     }
+    if (!(VALID_STATUSES as readonly string[]).includes(status)) {
+      return NextResponse.json({ error: "وضعیت آگهی نامعتبر است" }, { status: 400 });
+    }
 
     const slug = makeSlug(String(title));
 
     const result = await query(
       `INSERT INTO properties
-        (type, title, slug, address, description, phone, price, rent, deposit, meter, images)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+        (type, title, slug, address, description, phone, price, rent, deposit, meter, images, status, is_featured)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        RETURNING *`,
       [
         type,
@@ -207,6 +233,8 @@ export async function POST(request: NextRequest) {
         type === "rent" ? deposit : null,
         meter,
         JSON.stringify(Array.isArray(images) ? images : []),
+        status,
+        Boolean(is_featured),
       ]
     );
 

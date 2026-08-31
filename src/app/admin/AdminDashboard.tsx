@@ -2,12 +2,28 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { PropertyFormData } from "@/src/types/property";
-import { Search, Filter, RefreshCw, Eye, EyeOff, LogOut, Home, Users, TrendingUp } from "lucide-react";
+import { Search, Filter, RefreshCw, Eye, EyeOff, LogOut, Home, Users, TrendingUp, Star } from "lucide-react";
 import PropertyModal from "./PropertyModal";
 
 interface AdminDashboardProps {
   onLogout: () => void;
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  active: "فعال",
+  sold: "فروش رفته",
+  rented: "اجاره داده شده",
+  cancelled: "کنسل شده",
+  under_construction: "در حال ساخت",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  active: "bg-green-100 text-green-800 border-green-200",
+  sold: "bg-red-100 text-red-800 border-red-200",
+  rented: "bg-red-100 text-red-800 border-red-200",
+  cancelled: "bg-gray-200 text-gray-600 border-gray-300",
+  under_construction: "bg-amber-100 text-amber-800 border-amber-200",
+};
 
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +34,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [featuredOnly, setFeaturedOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showEmptyPrices, setShowEmptyPrices] = useState(false);
 
@@ -30,6 +48,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     
     if (typeFilter !== 'all') {
       filtered = filtered.filter(p => p.type === typeFilter);
+    }
+
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(p => (p.status ?? 'active') === statusFilter);
+    }
+
+    if (featuredOnly) {
+      filtered = filtered.filter(p => p.is_featured === true);
     }
     
     if (searchQuery.trim()) {
@@ -51,7 +77,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }
     
     setFilteredProperties(filtered);
-  }, [properties, searchQuery, typeFilter, showEmptyPrices]);
+  }, [properties, searchQuery, typeFilter, statusFilter, featuredOnly, showEmptyPrices]);
 
   const fetchProperties = useCallback(async () => {
     try {
@@ -70,6 +96,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         rent: toNumOrNull(property.rent),
         deposit: toNumOrNull(property.deposit),
         meter: Number(property.meter) || 0,
+        status: property.status ?? 'active',
+        is_featured: Boolean(property.is_featured),
       }));
       
       setProperties(sanitizedData);
@@ -193,6 +221,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     total: properties.length,
     forSale: properties.filter(p => p.type === 'buy').length,
     forRent: properties.filter(p => p.type === 'rent').length,
+    featured: properties.filter(p => p.is_featured).length,
     withPrice: properties.filter(p => {
       if (p.type === 'buy') return p.price !== null && p.price !== undefined;
       if (p.type === 'rent') return (p.rent !== null && p.rent !== undefined) || (p.deposit !== null && p.deposit !== undefined);
@@ -272,7 +301,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         </div>
 
         {/* کارت‌های آمار */}
-        <div className="grid mobile:grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-4 gap-4 mb-6">
+        <div className="grid mobile:grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-5 gap-4 mb-6">
           <StatCard 
             icon={<Home className="w-6 h-6" />}
             title="کل آگهی‌ها"
@@ -303,6 +332,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             change={`${Math.round((stats.withPrice / stats.total) * 100) || 0}%`}
             color="orange"
           />
+
+          <StatCard 
+            icon={<Star className="w-6 h-6" />}
+            title="آگهی ویژه"
+            value={stats.featured}
+            change={`${Math.round((stats.featured / stats.total) * 100) || 0}%`}
+            color="amber"
+          />
         </div>
 
         {/* بخش فیلتر و جستجو */}
@@ -330,6 +367,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               >
                 <Filter className="w-4 h-4" />
                 فیلترها
+              </button>
+
+              <button
+                onClick={() => setFeaturedOnly(!featuredOnly)}
+                className={`px-3 py-2 rounded-lg flex items-center gap-2 text-sm ${featuredOnly ? 'bg-amber-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+              >
+                <Star className="w-4 h-4" />
+                فقط ویژه‌ها
               </button>
               
               <button
@@ -372,8 +417,24 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     <option value="rent">فقط اجاره</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    وضعیت آگهی
+                  </label>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                  >
+                    <option value="all">همه وضعیت‌ها</option>
+                    {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </div>
                 
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
                   <div className="flex flex-wrap gap-3">
                     <button
                       onClick={() => setTypeFilter('all')}
@@ -417,6 +478,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               onClick={() => {
                 setSearchQuery('');
                 setTypeFilter('all');
+                setStatusFilter('all');
+                setFeaturedOnly(false);
                 setShowEmptyPrices(false);
               }}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -463,6 +526,7 @@ function StatCard({ icon, title, value, change, color }: any) {
     green: 'bg-green-50 border-green-200 text-green-700',
     purple: 'bg-purple-50 border-purple-200 text-purple-700',
     orange: 'bg-orange-50 border-orange-200 text-orange-700',
+    amber: 'bg-amber-50 border-amber-200 text-amber-700',
   };
 
   return (
@@ -483,8 +547,11 @@ function StatCard({ icon, title, value, change, color }: any) {
 
 // کامپوننت کارت ملک
 function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPriceInfo, formatPrice }: any) {
+  const statusLabel = STATUS_LABELS[property.status] ?? STATUS_LABELS.active;
+  const statusColor = STATUS_COLORS[property.status] ?? STATUS_COLORS.active;
+
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200">
+    <div className={`bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border ${property.is_featured ? 'border-amber-400 ring-2 ring-amber-200' : 'border-gray-200'}`}>
       <div className="relative h-40 sm:h-48">
         {property.images && property.images.length > 0 ? (
           <img 
@@ -499,8 +566,8 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
           </div>
         )}
         
-        {/* تگ نوع معامله */}
-        <div className="absolute top-2 left-2">
+        {/* تگ‌های نوع معامله و وضعیت */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
           <span className={`px-2 py-1 text-xs font-semibold rounded shadow ${
             property.type === 'buy' 
               ? 'bg-green-100 text-green-800 border border-green-200' 
@@ -508,7 +575,19 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
           }`}>
             {getDealTypeText(property.type)}
           </span>
+          <span className={`px-2 py-1 text-xs font-semibold rounded shadow border ${statusColor}`}>
+            {statusLabel}
+          </span>
         </div>
+
+        {/* نشان ویژه */}
+        {property.is_featured && (
+          <div className="absolute bottom-2 left-2">
+            <span className="px-2 py-1 text-xs font-semibold rounded shadow bg-amber-500 text-white flex items-center gap-1">
+              <Star className="w-3 h-3 fill-white" /> ویژه
+            </span>
+          </div>
+        )}
         
         {/* دکمه‌های عملیات */}
         <div className="absolute top-2 right-2 flex gap-2">

@@ -5,6 +5,8 @@ import { deleteUploadedFileByUrl } from "@/src/lib/uploads";
 
 type Params = { params: Promise<{ id: string }> };
 
+const VALID_STATUSES = ["active", "sold", "rented", "cancelled", "under_construction"] as const;
+
 export async function GET(_request: NextRequest, { params }: Params) {
   const { id } = await params;
   try {
@@ -38,6 +40,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
       deposit = null,
       meter = null,
       images = [],
+      status = "active",
+      is_featured = false,
     } = body ?? {};
 
     if (!type || (type !== "buy" && type !== "rent")) {
@@ -45,6 +49,9 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
     if (!title || !String(title).trim()) {
       return NextResponse.json({ error: "عنوان الزامی است" }, { status: 400 });
+    }
+    if (!(VALID_STATUSES as readonly string[]).includes(status)) {
+      return NextResponse.json({ error: "وضعیت آگهی نامعتبر است" }, { status: 400 });
     }
 
     const result = await query(
@@ -58,8 +65,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
         rent = $7,
         deposit = $8,
         meter = $9,
-        images = $10
-       WHERE id = $11
+        images = $10,
+        status = $11,
+        is_featured = $12
+       WHERE id = $13
        RETURNING *`,
       [
         type,
@@ -72,6 +81,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
         type === "rent" ? deposit : null,
         meter,
         JSON.stringify(Array.isArray(images) ? images : []),
+        status,
+        Boolean(is_featured),
         id,
       ]
     );

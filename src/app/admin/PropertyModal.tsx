@@ -3,6 +3,14 @@
 import { PropertyFormState, PropertyModalProps } from "@/src/types/property";
 import { useState, useEffect } from "react";
 
+const STATUS_OPTIONS = [
+  { value: "active", label: "فعال" },
+  { value: "sold", label: "فروش رفته" },
+  { value: "rented", label: "اجاره داده شده" },
+  { value: "cancelled", label: "کنسل شده" },
+  { value: "under_construction", label: "در حال ساخت" },
+];
+
 const PropertyModal = ({
   isOpen,
   onClose,
@@ -21,6 +29,8 @@ const PropertyModal = ({
     deposit: null,
     meter: null,
     images: [],
+    status: "active",
+    is_featured: false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -40,6 +50,8 @@ const PropertyModal = ({
         deposit: initialData.deposit ?? null,
         images: initialData.images ?? [],
         meter: initialData.meter ?? null,
+        status: initialData.status ?? "active",
+        is_featured: initialData.is_featured ?? false,
       });
     }
   }, [isEditing, initialData]);
@@ -58,13 +70,15 @@ const PropertyModal = ({
         deposit: null,
         images: [],
         meter: null,
+        status: "active",
+        is_featured: false,
       });
       setUploadProgress(0);
     }
   }, [isOpen]);
 
   const handleChange = (
-    e: React.ChangeEvent<
+    e: React.ChangeEvent
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
@@ -102,6 +116,13 @@ const PropertyModal = ({
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleFeaturedToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      is_featured: e.target.checked,
     }));
   };
 
@@ -284,6 +305,8 @@ const PropertyModal = ({
         description: formData.description,
         phone: formData.phone,
         images: formData.images,
+        status: formData.status,
+        is_featured: formData.is_featured,
       };
 
       if (formData.type === "buy") {
@@ -383,6 +406,26 @@ const PropertyModal = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    وضعیت آگهی *
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    required
+                    disabled={loading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                  >
+                    {STATUS_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     متراژ (متر مربع) *
                   </label>
                   <input
@@ -396,6 +439,20 @@ const PropertyModal = ({
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     placeholder="مثال: ۸۰"
                   />
+                </div>
+
+                <div className="flex items-center gap-2 pt-6">
+                  <input
+                    type="checkbox"
+                    id="is_featured"
+                    checked={formData.is_featured}
+                    onChange={handleFeaturedToggle}
+                    disabled={loading}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="is_featured" className="text-sm font-medium text-gray-700">
+                    ⭐ آگهی ویژه (نمایش در بخش ویژه‌ها)
+                  </label>
                 </div>
 
                 <div className="md:col-span-2">
