@@ -11,6 +11,11 @@ const STATUS_OPTIONS = [
   { value: "under_construction", label: "در حال ساخت" },
 ];
 
+// جنریک تک‌خطی به‌جای چندخطی، برای جلوگیری از خطای پارس Turbopack/SWC
+type PropertyChangeEvent = React.ChangeEvent
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+>;
+
 const PropertyModal = ({
   isOpen,
   onClose,
@@ -77,11 +82,7 @@ const PropertyModal = ({
     }
   }, [isOpen]);
 
-  const handleChange = (
-    e: React.ChangeEvent
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  const handleChange = (e: PropertyChangeEvent) => {
     const { name, value } = e.target;
 
     if (name === "type") {
