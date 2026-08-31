@@ -45,9 +45,9 @@ function CategorySection() {
 
   return (
     <div className="w-full flex flex-col gap-4 mobile:px-4 laptop:px-0">
-      <div className="flex items-center gap-2 justify-end">
-        <h2 className="text-lg font-bold text-[#0a1e3f]">دسته‌بندی املاک</h2>
+      <div className="flex items-center gap-2">
         <span className="w-2 h-6 bg-[#DC143C] rounded-full" />
+        <h2 className="text-lg font-bold text-[#0a1e3f]">دسته‌بندی املاک</h2>
       </div>
 
       <div className="grid grid-cols-2 tablet:grid-cols-4 gap-3">

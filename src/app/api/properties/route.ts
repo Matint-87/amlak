@@ -15,63 +15,20 @@ function makeSlug(title: string): string {
   return `${base || "property"}-${Date.now()}`;
 }
 
-// GET /api/properties?type=rent|buy&meterMin=50&order=created_at|id&limit=10&count=1
-// export async function GET(request: NextRequest) {
-//   try {
-//     const { searchParams } = new URL(request.url);
-//     const type = searchParams.get("type");
-//     const meterMin = searchParams.get("meterMin");
-//     const order = searchParams.get("order") === "created_at" ? "created_at" : "id";
-//     const limitParam = searchParams.get("limit");
-//     const countOnly = searchParams.get("count") === "1";
+// نرمال‌سازی حروف عربی/مدّدار به معادل ساده‌ی فارسی، برای مقایسه‌ی متن سرچ
+function normalizePersian(s: string): string {
+  return s
+    .replace(/[يئى]/g, "ی")
+    .replace(/ك/g, "ک")
+    .replace(/[آأإ]/g, "ا");
+}
 
-//     const conditions: string[] = [];
-//     const params: unknown[] = [];
+// همون نرمال‌سازی، به فرم آرگومان‌های تابع SQL translate()
+// (ترتیب حروف مبدا و مقصد باید دقیقاً منطبق باشه)
+const TRANSLATE_FROM = "يئىكآأإ";
+const TRANSLATE_TO = "یییکااا";
 
-//     if (type === "buy" || type === "rent") {
-//       params.push(type);
-//       conditions.push(`type = $${params.length}`);
-//     }
-
-//     if (meterMin) {
-//       const meterValue = Number(meterMin);
-//       if (Number.isFinite(meterValue)) {
-//         params.push(meterValue);
-//         conditions.push(`meter >= $${params.length}`);
-//       }
-//     }
-
-//     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
-
-//     if (countOnly) {
-//       const result = await query<{ count: string }>(
-//         `SELECT COUNT(*)::text AS count FROM properties ${where}`,
-//         params
-//       );
-//       return NextResponse.json({ count: Number(result.rows[0]?.count ?? 0) });
-//     }
-
-//     let sql = `SELECT * FROM properties ${where} ORDER BY ${order} DESC`;
-//     if (limitParam) {
-//       const limitValue = Number(limitParam);
-//       if (Number.isFinite(limitValue) && limitValue > 0) {
-//         params.push(Math.min(limitValue, 200));
-//         sql += ` LIMIT $${params.length}`;
-//       }
-//     }
-
-//     const result = await query(sql, params);
-//     return NextResponse.json({ data: result.rows });
-//   } catch (error) {
-//     console.error("❌ GET /api/properties error:", error);
-//     return NextResponse.json(
-//       { error: "خطا در دریافت آگهی‌ها از دیتابیس" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&meterMin=50&meterMax=120&order=created_at|id&limit=10&count=1
+// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&titleAny=خانه,ویلا&meterMin=50&meterMax=120&order=created_at|id&limit=10&count=1
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -94,15 +51,19 @@ export async function GET(request: NextRequest) {
     }
 
     if (location && location.trim()) {
-      params.push(`%${location.trim()}%`);
-      conditions.push(`address ILIKE $${params.length}`);
+      params.push(`%${normalizePersian(location.trim())}%`);
+      conditions.push(
+        `translate(address, '${TRANSLATE_FROM}', '${TRANSLATE_TO}') ILIKE $${params.length}`
+      );
     }
 
     if (q && q.trim()) {
-      params.push(`%${q.trim()}%`);
+      params.push(`%${normalizePersian(q.trim())}%`);
       const idx = params.length;
       conditions.push(
-        `(title ILIKE $${idx} OR address ILIKE $${idx} OR description ILIKE $${idx})`
+        `(translate(title, '${TRANSLATE_FROM}', '${TRANSLATE_TO}') ILIKE $${idx}
+          OR translate(address, '${TRANSLATE_FROM}', '${TRANSLATE_TO}') ILIKE $${idx}
+          OR translate(description, '${TRANSLATE_FROM}', '${TRANSLATE_TO}') ILIKE $${idx})`
       );
     }
 
@@ -114,8 +75,8 @@ export async function GET(request: NextRequest) {
 
       if (keywords.length) {
         const orConditions = keywords.map((kw) => {
-          params.push(`%${kw}%`);
-          return `title ILIKE $${params.length}`;
+          params.push(`%${normalizePersian(kw)}%`);
+          return `translate(title, '${TRANSLATE_FROM}', '${TRANSLATE_TO}') ILIKE $${params.length}`;
         });
         conditions.push(`(${orConditions.join(" OR ")})`);
       }
