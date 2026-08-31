@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HiOutlineLocationMarker, HiOutlineSearch } from "react-icons/hi";
+import { HiStar } from "react-icons/hi2";
 
 interface Ad {
   id: number;
@@ -12,11 +13,25 @@ interface Ad {
   deposit?: number | null;
   meter?: number | null;
   images: string[] | string;
+  status?: string;
+  is_featured?: boolean;
 }
 
 interface SearchPageProps {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  sold: "فروش رفته",
+  rented: "اجاره داده شده",
+  under_construction: "در حال ساخت",
+};
+
+const STATUS_BADGE_COLOR: Record<string, string> = {
+  sold: "bg-red-600/90",
+  rented: "bg-red-600/90",
+  under_construction: "bg-amber-500/90",
+};
 
 function formatAmount(value: number | null | undefined): string {
   if (value === null || value === undefined) return "ثبت نشده";
@@ -49,6 +64,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   if (meterMax) url.searchParams.set("meterMax", meterMax);
   if (titleAny) url.searchParams.set("titleAny", titleAny);
   if (type) url.searchParams.set("type", type);
+  url.searchParams.set("excludeStatus", "cancelled");
 
   const res = await fetch(url, { cache: "no-store" });
   const { data } = await res.json();
@@ -107,10 +123,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <div className="grid mobile:grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-3 desktop:grid-cols-4 gap-5 w-full laptop:w-[70%]">
           {ads.map((p) => {
             const isBuy = p.type === "buy";
+            const statusLabel = p.status ? STATUS_LABELS[p.status] : null;
+            const statusColor = p.status ? STATUS_BADGE_COLOR[p.status] : null;
 
             return (
               <Link href={`/property/${p.id}`} key={p.id} className="group block">
-                <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white h-[310px] shadow-sm hover:shadow-md transition-shadow">
+                <article
+                  className={`overflow-hidden rounded-2xl border bg-white h-[310px] transition-shadow ${
+                    p.is_featured
+                      ? "border-2 border-amber-400 shadow-[0_0_0_3px_rgba(251,191,36,0.15)]"
+                      : "border-gray-200 shadow-sm hover:shadow-md"
+                  }`}
+                >
                   {/* IMAGE */}
                   <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
                     <Image
@@ -122,13 +146,28 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
 
+                    {p.is_featured && (
+                      <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
+                        <HiStar size={12} />
+                        ویژه
+                      </div>
+                    )}
+
                     <div
-                      className={`absolute right-3 top-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm ${
+                      className={`absolute top-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm ${
                         isBuy ? "bg-blue-600/90" : "bg-emerald-600/90"
-                      }`}
+                      } ${p.is_featured ? "left-3" : "right-3"}`}
                     >
                       {isBuy ? "فروش" : "رهن و اجاره"}
                     </div>
+
+                    {statusLabel && (
+                      <div
+                        className={`absolute left-3 bottom-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm ${statusColor}`}
+                      >
+                        {statusLabel}
+                      </div>
+                    )}
 
                     <div className="absolute bottom-3 right-3">
                       <p className="text-sm font-bold text-white drop-shadow-md">

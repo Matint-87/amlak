@@ -35,7 +35,12 @@ export default async function Page() {
     <div>
       <Hero />
       <CategorySection />
-      {featuredAds.length > 0 && <FeaturedSlider ads={featuredAds} />}
+      <div className="w-full my-[100px] h-[350px] mobile:px-5 laptop:px-0 flex items-center justify-center">
+        <div className="mobile:w-full laptop:w-[70%] h-full">
+          <span className="text-2xl">آگهی‌های ویژه</span>
+          {featuredAds.length > 0 && <FeaturedSlider ads={featuredAds} />}
+        </div>
+      </div>
       <div className="w-full my-[100px] h-[350px] mobile:px-5 laptop:px-0 flex items-center justify-center">
         <div className="mobile:w-full laptop:w-[70%] h-full">
           <span className="text-2xl">آگهی های جدید</span>
@@ -46,3 +51,4 @@ export default async function Page() {
     </div>
   );
 }
+//

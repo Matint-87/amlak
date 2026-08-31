@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import FilterBar from "@/src/components/FilterBar";
 import { useSearchParams } from "next/navigation";
+import { HiOutlineLocationMarker } from "react-icons/hi";
+import { HiStar } from "react-icons/hi2";
 
 export interface Property {
   id: number;
-  slug: string; // فرض می‌کنم slug دارید
+  slug: string;
   title: string;
   address: string;
   description?: string;
@@ -18,13 +21,38 @@ export interface Property {
   type: "buy" | "rent";
   images: string[];
   meter: number;
+  status?: string;
+  is_featured?: boolean;
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  sold: "فروش رفته",
+  rented: "اجاره داده شده",
+  under_construction: "در حال ساخت",
+};
+
+const STATUS_BADGE_COLOR: Record<string, string> = {
+  sold: "bg-red-600/90",
+  rented: "bg-red-600/90",
+  under_construction: "bg-amber-500/90",
+};
 
 // مقدار null/undefined یعنی اصلاً ثبت نشده، ۰ یعنی «توافقی»
 function formatAmount(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "-";
+  if (value === null || value === undefined) return "ثبت نشده";
   if (value === 0) return "توافقی";
   return value.toLocaleString("fa-IR") + " تومان";
+}
+
+function getFirstImage(images: string[] | string) {
+  if (!images) return "/hero.jpg";
+  if (Array.isArray(images)) return images[0] || "/hero.jpg";
+  try {
+    const arr = JSON.parse(images);
+    return Array.isArray(arr) && arr.length ? arr[0] : "/hero.jpg";
+  } catch {
+    return "/hero.jpg";
+  }
 }
 
 export default function SalePage() {
@@ -35,11 +63,15 @@ export default function SalePage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // دریافت پارامتر meter از URL
-      const meterParam = searchParams.get('meter');
 
-      const apiParams = new URLSearchParams({ type: "buy" });
+      // دریافت پارامتر meter از URL
+      const meterParam = searchParams.get("meter");
+
+      const apiParams = new URLSearchParams({
+        type: "buy",
+        excludeStatus: "cancelled", // آگهی‌های کنسل‌شده توی سایت عمومی نمایش داده نمی‌شن
+        order: "created_at",
+      });
       if (meterParam) apiParams.set("meterMin", meterParam);
 
       const res = await fetch(`/api/properties?${apiParams.toString()}`, {
@@ -84,39 +116,92 @@ export default function SalePage() {
           <p className="mt-4 text-gray-600">در حال دریافت آگهی‌ها...</p>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-6 justify-center">
+        <div className="grid mobile:grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-3 desktop:grid-cols-4 gap-5 max-w-7xl mx-auto">
           {properties.length > 0 ? (
-            properties.map((p) => (
-              <Link
-                key={p.id}
-                href={`/property/${p.slug}`}
-                className="backdrop-blur-lg bg-white rounded-2xl p-6 w-80 shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl block"
-              >
-                <img
-                  src={p.images?.[0] || "/hero.jpg"}
-                  alt={p.title}
-                  className="w-full h-48 object-cover rounded-xl mb-4"
-                />
+            properties.map((p) => {
+              const statusLabel = p.status ? STATUS_LABELS[p.status] : null;
+              const statusColor = p.status ? STATUS_BADGE_COLOR[p.status] : null;
 
-                <h3 className="text-xl font-semibold mb-2">{p.title}</h3>
-                <p className="text-sm opacity-90 mb-1">
-                  <b>آدرس:</b> {p.address}
-                </p>
-                <p className="mb-2 text-sm line-clamp-2">{p.description || "-"}</p>
-                <p className="text-sm mb-1">
-                  <b>متراژ:</b> {p.meter} متر
-                </p>
-                <p className="text-sm mb-2">
-                  <b>تلفن:</b> {p.phone || "-"}
-                </p>
+              return (
+                <Link href={`/property/${p.slug}`} key={p.id} className="group block">
+                  <article
+                    className={`overflow-hidden rounded-2xl border bg-white h-[310px] transition-shadow ${
+                      p.is_featured
+                        ? "border-2 border-amber-400 shadow-[0_0_0_3px_rgba(251,191,36,0.15)]"
+                        : "border-gray-200 shadow-sm hover:shadow-md"
+                    }`}
+                  >
+                    {/* IMAGE */}
+                    <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
+                      <Image
+                        src={getFirstImage(p.images)}
+                        fill
+                        alt={p.title || "تصویر ملک"}
+                        className="w-full h-full object-cover"
+                      />
 
-                <p className="text-base font-semibold mb-1">
-                  <b>قیمت خرید:</b> {formatAmount(p.price)}
-                </p>
-              </Link>
-            ))
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+
+                      {/* نشان ویژه */}
+                      {p.is_featured && (
+                        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
+                          <HiStar size={12} />
+                          ویژه
+                        </div>
+                      )}
+
+                      {/* Type */}
+                      <div
+                        className={`absolute top-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm bg-blue-600/90 ${
+                          p.is_featured ? "left-3" : "right-3"
+                        }`}
+                      >
+                        فروش
+                      </div>
+
+                      {/* Status badge */}
+                      {statusLabel && (
+                        <div
+                          className={`absolute left-3 bottom-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm ${statusColor}`}
+                        >
+                          {statusLabel}
+                        </div>
+                      )}
+
+                      {/* Main price */}
+                      <div className="absolute bottom-3 right-3">
+                        <p className="text-sm font-bold text-white drop-shadow-md">
+                          {formatAmount(p.price)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* CONTENT */}
+                    <div className="p-3">
+                      <h3 className="truncate text-[15px] font-bold text-gray-900 transition-colors group-hover:text-blue-600">
+                        {p.title}
+                      </h3>
+
+                      <div className="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
+                        <HiOutlineLocationMarker className="shrink-0 text-red-500" size={14} />
+                        <span className="truncate">{p.address}</span>
+                      </div>
+
+                      <div className="my-3 h-px bg-gray-100" />
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] text-gray-400">قیمت کل</span>
+                        <span className="text-sm font-bold text-gray-800">
+                          {formatAmount(p.price)}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              );
+            })
           ) : (
-            <p className="text-gray-500 text-center mt-10">
+            <p className="text-gray-500 text-center mt-10 col-span-full">
               هیچ آگهی‌ای برای فروش پیدا نشد
             </p>
           )}
