@@ -12,7 +12,7 @@ const STATUS_OPTIONS = [
 ];
 
 // جنریک تک‌خطی به‌جای چندخطی، برای جلوگیری از خطای پارس Turbopack/SWC
-type PropertyChangeEvent = React.ChangeEvent
+type PropertyChangeEvent = React.ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 >;
 
@@ -272,16 +272,28 @@ const PropertyModal = ({
 
     if (formData.type === "buy") {
       // اجازه بده قیمت صفر باشد (یعنی توافقی) — فقط خالی بودن یا منفی بودن رد می‌شود
-      if (formData.price === null || formData.price === undefined || formData.price < 0) {
+      if (
+        formData.price === null ||
+        formData.price === undefined ||
+        formData.price < 0
+      ) {
         alert("لطفا قیمت فروش را وارد کنید (برای توافقی، عدد ۰ وارد کنید)");
         return false;
       }
     } else if (formData.type === "rent") {
-      if (formData.rent === null || formData.rent === undefined || formData.rent < 0) {
+      if (
+        formData.rent === null ||
+        formData.rent === undefined ||
+        formData.rent < 0
+      ) {
         alert("لطفا اجاره ماهانه را وارد کنید (برای توافقی، عدد ۰ وارد کنید)");
         return false;
       }
-      if (formData.deposit === null || formData.deposit === undefined || formData.deposit < 0) {
+      if (
+        formData.deposit === null ||
+        formData.deposit === undefined ||
+        formData.deposit < 0
+      ) {
         alert("لطفا ودیعه را وارد کنید (برای توافقی، عدد ۰ وارد کنید)");
         return false;
       }
@@ -336,7 +348,9 @@ const PropertyModal = ({
 
       onSubmit(formData);
       alert(
-        isEditing ? "اطلاعات با موفقیت ویرایش شد!" : "اطلاعات با موفقیت ثبت شد!"
+        isEditing
+          ? "اطلاعات با موفقیت ویرایش شد!"
+          : "اطلاعات با موفقیت ثبت شد!",
       );
       onClose();
     } catch (error: any) {
@@ -451,7 +465,10 @@ const PropertyModal = ({
                     disabled={loading}
                     className="w-4 h-4"
                   />
-                  <label htmlFor="is_featured" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="is_featured"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     ⭐ آگهی ویژه (نمایش در بخش ویژه‌ها)
                   </label>
                 </div>
