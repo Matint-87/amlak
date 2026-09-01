@@ -17,7 +17,6 @@ function Location() {
         referrerPolicy="no-referrer-when-downgrade"
       />
 
-      {/* برچسب آدرس روی نقشه */}
       <div className="absolute top-3 right-3 left-3 flex items-start justify-between gap-2 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-sm rounded-xl px-3.5 py-2.5 shadow-md flex items-center gap-2 pointer-events-auto">
           <HiOutlineLocationMarker
@@ -30,7 +29,6 @@ function Location() {
         </div>
       </div>
 
-      {/* دکمه مسیریابی */}
       <Link
         href={mapsUrl}
         target="_blank"

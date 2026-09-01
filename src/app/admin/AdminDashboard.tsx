@@ -67,7 +67,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       );
     }
     
-    // "بدون قیمت" یعنی مقدار اصلاً ثبت نشده (null)، نه اینکه صفر (توافقی) باشد
     if (!showEmptyPrices) {
       filtered = filtered.filter(p => {
         if (p.type === 'buy') return p.price !== null && p.price !== undefined;
@@ -86,8 +85,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       if (!res.ok) throw new Error('خطا در دریافت آگهی‌ها');
       const { data } = await res.json();
 
-      // مهم: null را با Number(...) || 0 به صفر تبدیل نکن، وگرنه فرق «توافقی» (۰ عمدی)
-      // و «تعیین نشده» (خالی) از بین می‌رود. مقدار null باید null بماند.
       const toNumOrNull = (v: any) => (v === null || v === undefined || v === '' ? null : Number(v));
 
       const sanitizedData = (data || []).map((property: any) => ({
@@ -132,7 +129,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return;
       }
 
-      // حذف از دیتابیس (این API خودش فایل‌های تصویر مرتبط را هم روی سرور پاک می‌کند)
       const res = await fetch(`/api/properties/${id}`, { method: 'DELETE' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -148,7 +144,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }
   };
 
-  // price می‌تواند null (اصلاً ثبت نشده) یا عدد (شامل ۰ به معنای توافقی) باشد
   const formatPrice = (price: number | null | undefined) => {
     if (price === null || price === undefined) return 'قیمت تعیین نشده';
     if (price === 0) return 'توافقی';
@@ -216,7 +211,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     return null;
   };
 
-  // آمار کلی
   const stats = {
     total: properties.length,
     forSale: properties.filter(p => p.type === 'buy').length,
@@ -236,7 +230,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-10">
-      {/* Navbar */}
       <nav className="">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -270,7 +263,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* بخش هدر */}
         <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -300,7 +292,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </div>
         </div>
 
-        {/* کارت‌های آمار */}
         <div className="grid mobile:grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-5 gap-4 mb-6">
           <StatCard 
             icon={<Home className="w-6 h-6" />}
@@ -342,7 +333,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           />
         </div>
 
-        {/* بخش فیلتر و جستجو */}
         <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-3">
@@ -387,7 +377,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             </div>
           </div>
 
-          {/* نوار جستجو */}
           <div className="relative mb-4">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -399,7 +388,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             />
           </div>
 
-          {/* فیلترهای پیشرفته */}
           {showFilters && (
             <div className="bg-gray-50 rounded-lg p-4 mb-4 animate-fadeIn">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -461,7 +449,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           )}
         </div>
 
-        {/* نمایش لیست properties */}
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent mx-auto"></div>
@@ -504,7 +491,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         )}
       </div>
 
-      {/* مودال */}
       <PropertyModal
         isOpen={isModalOpen}
         onClose={() => {
@@ -519,7 +505,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   );
 }
 
-// کامپوننت کارت آمار
 function StatCard({ icon, title, value, change, color }: any) {
   const colorClasses = {
     blue: 'bg-blue-50 border-blue-200 text-blue-700',
@@ -545,7 +530,6 @@ function StatCard({ icon, title, value, change, color }: any) {
   );
 }
 
-// کامپوننت کارت ملک
 function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPriceInfo, formatPrice }: any) {
   const statusLabel = STATUS_LABELS[property.status] ?? STATUS_LABELS.active;
   const statusColor = STATUS_COLORS[property.status] ?? STATUS_COLORS.active;
@@ -566,7 +550,6 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
           </div>
         )}
         
-        {/* تگ‌های نوع معامله و وضعیت */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
           <span className={`px-2 py-1 text-xs font-semibold rounded shadow ${
             property.type === 'buy' 
@@ -580,7 +563,6 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
           </span>
         </div>
 
-        {/* نشان ویژه */}
         {property.is_featured && (
           <div className="absolute bottom-2 left-2">
             <span className="px-2 py-1 text-xs font-semibold rounded shadow bg-amber-500 text-white flex items-center gap-1">
@@ -589,7 +571,6 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
           </div>
         )}
         
-        {/* دکمه‌های عملیات */}
         <div className="absolute top-2 right-2 flex gap-2">
           <button
             onClick={() => onEdit(property)}
@@ -619,7 +600,6 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
         </h3>
         
         <div className="space-y-2 text-sm">
-          {/* متراژ */}
           {property.meter > 0 && (
             <div className="flex items-center text-gray-600">
               <svg className="w-4 h-4 ml-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -629,10 +609,8 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
             </div>
           )}
           
-          {/* قیمت */}
           {renderPriceInfo(property)}
           
-          {/* آدرس */}
           {property.address && (
             <div className="flex items-start text-gray-600 pt-2 border-t border-gray-100">
               <svg className="w-4 h-4 ml-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -643,7 +621,6 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
             </div>
           )}
           
-          {/* تاریخ */}
           <div className="pt-2 border-t border-gray-100 text-xs text-gray-400 flex justify-between">
             <span>{new Date(property.created_at).toLocaleDateString('fa-IR')}</span>
           </div>
@@ -653,7 +630,6 @@ function PropertyCard({ property, onEdit, onDelete, getDealTypeText, renderPrice
   );
 }
 
-// استایل‌های CSS
 const styles = `
   @keyframes fadeIn {
     from {
@@ -678,7 +654,6 @@ const styles = `
   }
 `;
 
-// اضافه کردن استایل‌ها
 if (typeof document !== 'undefined') {
   const styleSheet = document.createElement("style");
   styleSheet.innerText = styles;

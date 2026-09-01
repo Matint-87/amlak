@@ -6,7 +6,7 @@ import { GrFormPrevious } from "react-icons/gr";
 
 interface ImageLightboxProps {
   images: string[];
-  index: number; // ایندکس تصویر فعلی (کنترل‌شده از بیرون)
+  index: number; 
   isOpen: boolean;
   onClose: () => void;
   onIndexChange: (newIndex: number) => void;
@@ -31,7 +31,6 @@ export default function ImageLightbox({
     onIndexChange(index === images.length - 1 ? 0 : index + 1);
   }, [images.length, index, onIndexChange]);
 
-  // بستن با ESC و جابجایی با کلیدهای جهت‌دار (چپ/راست)
   useEffect(() => {
     if (!isOpen) return;
 
@@ -41,7 +40,6 @@ export default function ImageLightbox({
       if (e.key === "ArrowRight") goNext();
     };
 
-    // جلوگیری از اسکرول پس‌زمینه وقتی لایت‌باکس بازه
     document.addEventListener("keydown", handleKeyDown);
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -57,9 +55,8 @@ export default function ImageLightbox({
   return (
     <div
       className="fixed inset-0 z-[999] bg-black/95 flex items-center justify-center"
-      onClick={onClose} // کلیک روی پس‌زمینه، مودال رو می‌بنده
+      onClick={onClose} 
     >
-      {/* دکمه بستن */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -71,19 +68,16 @@ export default function ImageLightbox({
         <MdClose size={28} />
       </button>
 
-      {/* شمارنده تصاویر */}
       <div className="absolute top-4 left-4 z-10 bg-white/10 text-white px-3 py-1 rounded-full text-sm">
         {index + 1} / {images.length}
       </div>
 
-      {/* عنوان ملک (اختیاری) */}
       {title && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 text-white px-4 py-2 rounded-full text-sm max-w-[90%] truncate">
           {title}
         </div>
       )}
 
-      {/* دکمه‌های ناوبری قبلی/بعدی */}
       {images.length > 1 && (
         <>
           <button
@@ -110,10 +104,9 @@ export default function ImageLightbox({
         </>
       )}
 
-      {/* تصویر اصلی، تمام‌صفحه و کامل بدون برش */}
       <div
         className="relative w-full h-full flex items-center justify-center p-4 md:p-10"
-        onClick={(e) => e.stopPropagation()} // کلیک روی خود تصویر مودال رو نبنده
+        onClick={(e) => e.stopPropagation()} 
       >
         <img
           src={images[index]}
@@ -122,7 +115,6 @@ export default function ImageLightbox({
         />
       </div>
 
-      {/* نوار کوچک تصاویر پایین صفحه برای پرش سریع */}
       {images.length > 1 && (
         <div
           className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10 flex gap-2 overflow-x-auto max-w-[90%] px-2"

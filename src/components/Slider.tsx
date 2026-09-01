@@ -108,7 +108,6 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   h-[310px]
                 "
               >
-                {/* IMAGE */}
                 <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
                   <Image
                     src={getFirstImage(p.images)}
@@ -117,10 +116,8 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                     className="w-full h-full object-cover"
                   />
 
-                  {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
 
-                  {/* Type */}
                   <div
                     className={`
                       absolute
@@ -144,7 +141,6 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                     {isBuy ? "فروش" : "رهن و اجاره"}
                   </div>
 
-                  {/* Main price */}
                   <div className="absolute bottom-3 right-3">
                     <p className="text-sm font-bold text-white drop-shadow-md">
                       {isBuy
@@ -160,7 +156,6 @@ export default function Slider({ ads }: { ads: Ad[] }) {
                   </div>
                 </div>
 
-                {/* CONTENT */}
                 <div className="p-3">
                   {/* Title */}
                   <h3 className="truncate text-[15px] font-bold text-gray-900 transition-colors group-hover:text-blue-600">

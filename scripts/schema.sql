@@ -1,6 +1,3 @@
--- اسکریپت ساخت جدول‌های پروژه املاک روی Postgres
--- اجرا: psql "$DATABASE_URL" -f scripts/schema.sql
-
 CREATE TABLE IF NOT EXISTS properties (
   id           SERIAL PRIMARY KEY,
   type         TEXT NOT NULL CHECK (type IN ('buy', 'rent')),
@@ -23,7 +20,6 @@ CREATE INDEX IF NOT EXISTS idx_properties_meter ON properties (meter);
 CREATE INDEX IF NOT EXISTS idx_properties_created_at ON properties (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_properties_slug ON properties (slug);
 
--- به‌روزرسانی خودکار updated_at در هر UPDATE
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

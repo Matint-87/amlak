@@ -2,8 +2,6 @@ import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { randomBytes } from "crypto";
 
-// تصاویر روی خود سرور (VPS) داخل public/uploads/properties ذخیره می‌شوند
-// و چون داخل پوشه public هستند، Next.js آن‌ها را مستقیم و رایگان serve می‌کند.
 export const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "properties");
 export const UPLOAD_URL_PREFIX = "/uploads/properties";
 
@@ -38,12 +36,10 @@ export async function deleteUploadedFileByUrl(url: string): Promise<void> {
   try {
     if (!url || !url.startsWith(UPLOAD_URL_PREFIX)) return;
     const fileName = url.substring(UPLOAD_URL_PREFIX.length + 1);
-    // جلوگیری از path traversal
     if (!fileName || fileName.includes("..") || fileName.includes("/")) return;
     const filePath = path.join(UPLOAD_DIR, fileName);
     await unlink(filePath);
   } catch (error: unknown) {
-    // اگر فایل از قبل وجود نداشت مشکلی نیست
     if ((error as NodeJS.ErrnoException)?.code !== "ENOENT") {
       console.error("❌ خطا در حذف فایل آپلود شده:", error);
     }

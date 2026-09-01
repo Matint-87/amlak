@@ -7,14 +7,12 @@ function Footer() {
   return (
     <footer className="w-full bg-[#0a1e3f] text-white mt-10" dir="rtl">
       <div className="max-w-7xl mx-auto mobile:w-full laptop:w-[70%] py-14 mobile:px-5 laptop:px-0">
-        {/* هدر برند */}
         <div className="flex items-center gap-2.5 mb-10 pb-8 border-b border-white/10">
           <MdOutlineRealEstateAgent className="text-3xl text-[#0BA6DF]" />
           <span className="text-xl font-bold">املاک شاپور</span>
         </div>
 
         <div className="grid mobile:grid-cols-1 tablet:grid-cols-3 gap-10">
-          {/* آدرس */}
           <div>
             <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-white">
               <span className="w-1.5 h-5 bg-[#0BA6DF] rounded-full" />
@@ -29,7 +27,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* تماس */}
           <div>
             <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-white">
               <span className="w-1.5 h-5 bg-[#0BA6DF] rounded-full" />
@@ -53,7 +50,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* شبکه‌های اجتماعی */}
           <div>
             <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-white">
               <span className="w-1.5 h-5 bg-[#0BA6DF] rounded-full" />
@@ -83,7 +79,6 @@ function Footer() {
           </div>
         </div>
 
-        {/* خط پایانی */}
         <div className="mt-12 pt-6 border-t border-white/10 text-center text-xs text-gray-400">
           © {new Date().getFullYear()} تمامی حقوق برای املاک شاپور محفوظ است.
         </div>

@@ -53,7 +53,6 @@ export default function FilterBar({ defaultType = "buy" }: FilterBarProps) {
   return (
     <div className="w-[300px]">
       <div className="hidden md:flex flex-col lg:flex-row items-center justify-between gap-3 md:gap-4 lg:gap-6 p-4 md:p-5 lg:p-6 bg-white shadow-sm md:shadow rounded-lg mx-2 sm:mx-4 md:mx-6 lg:mx-8 mb-4 md:mb-6">
-        {/* عنوان */}
         <div className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-3 md:mb-0 w-full md:w-auto text-center md:text-right">
           فیلتر آگهی‌های {pageTitle}
         </div>
@@ -97,7 +96,6 @@ export default function FilterBar({ defaultType = "buy" }: FilterBarProps) {
             )}
             <button
               onClick={() => {
-                // اگر می‌خواهید عملیات خاصی انجام شود
                 console.log('فیلتر اعمال شد');
               }}
               className={`px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow ${

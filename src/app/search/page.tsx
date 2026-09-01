@@ -135,7 +135,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       : "border-gray-200 shadow-sm hover:shadow-md"
                   }`}
                 >
-                  {/* IMAGE */}
                   <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
                     <Image
                       src={getFirstImage(p.images)}
@@ -181,7 +180,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     </div>
                   </div>
 
-                  {/* CONTENT */}
                   <div className="p-3">
                     <h3 className="truncate text-[15px] font-bold text-gray-900 transition-colors group-hover:text-blue-600">
                       {p.title}

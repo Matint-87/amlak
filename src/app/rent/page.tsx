@@ -37,7 +37,6 @@ const STATUS_BADGE_COLOR: Record<string, string> = {
   under_construction: "bg-amber-500/90",
 };
 
-// مقدار null/undefined یعنی اصلاً ثبت نشده، ۰ یعنی «توافقی»
 function formatAmount(value: number | null | undefined): string {
   if (value === null || value === undefined) return "ثبت نشده";
   if (value === 0) return "توافقی";
@@ -60,17 +59,15 @@ export default function RentPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // تابع برای دریافت داده‌ها با فیلتر
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      // دریافت پارامتر meter از URL
       const meterParam = searchParams.get("meter");
 
       const apiParams = new URLSearchParams({
         type: "rent",
-        excludeStatus: "cancelled", // آگهی‌های کنسل‌شده توی سایت عمومی نمایش داده نمی‌شن
+        excludeStatus: "cancelled", 
         order: "created_at",
       });
       if (meterParam) apiParams.set("meterMin", meterParam);
@@ -95,7 +92,6 @@ export default function RentPage() {
     }
   };
 
-  // وقتی searchParams تغییر کرد، داده‌ها را دوباره بگیر
   useEffect(() => {
     fetchData();
   }, [searchParams]);
@@ -106,12 +102,10 @@ export default function RentPage() {
         آگهی‌های اجاره
       </h1>
 
-      {/* فیلتر بار */}
       <div className="mobile:flex justify-center mb-6">
         <FilterBar defaultType="rent" />
       </div>
 
-      {/* نمایش loading */}
       {loading ? (
         <div className="text-center py-10">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
@@ -133,7 +127,6 @@ export default function RentPage() {
                         : "border-gray-200 shadow-sm hover:shadow-md"
                     }`}
                   >
-                    {/* IMAGE */}
                     <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
                       <Image
                         src={getFirstImage(p.images)}
@@ -144,7 +137,6 @@ export default function RentPage() {
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
 
-                      {/* نشان ویژه */}
                       {p.is_featured && (
                         <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-sm">
                           <HiStar size={12} />
@@ -152,7 +144,6 @@ export default function RentPage() {
                         </div>
                       )}
 
-                      {/* Type */}
                       <div
                         className={`absolute top-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm bg-emerald-600/90 ${
                           p.is_featured ? "left-3" : "right-3"
@@ -161,7 +152,6 @@ export default function RentPage() {
                         رهن و اجاره
                       </div>
 
-                      {/* Status badge */}
                       {statusLabel && (
                         <div
                           className={`absolute left-3 bottom-3 rounded-full px-3 py-1 text-[11px] font-bold text-white shadow-sm ${statusColor}`}
@@ -170,7 +160,6 @@ export default function RentPage() {
                         </div>
                       )}
 
-                      {/* Main price */}
                       <div className="absolute bottom-3 right-3">
                         <p className="text-sm font-bold text-white drop-shadow-md">
                           {formatAmount(p.deposit)}
@@ -181,7 +170,6 @@ export default function RentPage() {
                       </div>
                     </div>
 
-                    {/* CONTENT */}
                     <div className="p-3">
                       <h3 className="truncate text-[15px] font-bold text-gray-900 transition-colors group-hover:text-emerald-600">
                         {p.title}

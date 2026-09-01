@@ -18,7 +18,6 @@ function makeSlug(title: string): string {
   return `${base || "property"}-${Date.now()}`;
 }
 
-// نرمال‌سازی حروف عربی/مدّدار به معادل ساده‌ی فارسی، برای مقایسه‌ی متن سرچ
 function normalizePersian(s: string): string {
   return s
     .replace(/[يئى]/g, "ی")
@@ -26,26 +25,23 @@ function normalizePersian(s: string): string {
     .replace(/[آأإ]/g, "ا");
 }
 
-// همون نرمال‌سازی، به فرم آرگومان‌های تابع SQL translate()
-// (ترتیب حروف مبدا و مقصد باید دقیقاً منطبق باشه)
 const TRANSLATE_FROM = "يئىكآأإ";
 const TRANSLATE_TO = "یییکااا";
 
-// GET /api/properties?type=rent|buy&q=آپارتمان&location=ولیعصر&titleAny=خانه,ویلا&meterMin=50&meterMax=120&priceMin=100&priceMax=500&status=active&featured=1&order=created_at|id&limit=10&count=1
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const q = searchParams.get("q");
     const location = searchParams.get("location");
-    const titleAny = searchParams.get("titleAny"); // مثلا: "خانه,ویلا"
+    const titleAny = searchParams.get("titleAny"); 
     const meterMin = searchParams.get("meterMin");
     const meterMax = searchParams.get("meterMax");
     const priceMin = searchParams.get("priceMin");
     const priceMax = searchParams.get("priceMax");
-    const status = searchParams.get("status"); // فعال/فروش رفته/اجاره داده شده/کنسل/در حال ساخت
-    const excludeStatus = searchParams.get("excludeStatus"); // مثلا برای سایت عمومی: excludeStatus=cancelled
-    const featured = searchParams.get("featured"); // "1" یعنی فقط ویژه‌ها
+    const status = searchParams.get("status"); 
+    const excludeStatus = searchParams.get("excludeStatus"); 
+    const featured = searchParams.get("featured"); 
     const order = searchParams.get("order") === "created_at" ? "created_at" : "id";
     const limitParam = searchParams.get("limit");
     const countOnly = searchParams.get("count") === "1";
@@ -120,8 +116,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // فیلتر قیمت: اگه type دقیقاً "buy" یا "rent" باشه فقط رو ستون مربوطه،
-    // وگرنه (type=all یا خالی) رو هر دو ستون price و deposit با OR
     if (priceMin || priceMax) {
       const priceColumns =
         type === "buy" ? ["price"] : type === "rent" ? ["deposit"] : ["price", "deposit"];
@@ -157,7 +151,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ count: Number(result.rows[0]?.count ?? 0) });
     }
 
-    // آگهی‌های ویژه همیشه اول لیست نمایش داده بشن، بعد بر اساس order انتخابی
     let sql = `SELECT * FROM properties ${where} ORDER BY is_featured DESC, ${order} DESC`;
     if (limitParam) {
       const limitValue = Number(limitParam);
@@ -178,7 +171,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/properties  (فقط ادمین)
 export async function POST(request: NextRequest) {
   try {
     if (!(await isAdminRequestAuthenticated())) {

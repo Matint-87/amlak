@@ -37,7 +37,6 @@ function SearchBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // جلوگیری از اسکرول پشت پنل وقتی توی موبایل بازه
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -105,7 +104,6 @@ function SearchBar() {
         )}
       </button>
 
-      {/* بک‌دراپ فقط روی موبایل */}
       <div
         onClick={() => setOpen(false)}
         className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-200 laptop:hidden ${
@@ -113,7 +111,6 @@ function SearchBar() {
         }`}
       />
 
-      {/* پنل: موبایل = fixed زیر navbar با عرض کامل / از تبلت به بالا = dropdown نسبی */}
       <div
         className={`
           fixed z-50 bg-white shadow-2xl ring-1 ring-black/5
@@ -129,7 +126,6 @@ function SearchBar() {
           }
         `}
       >
-        {/* هدر */}
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-gray-800 flex items-center gap-2">
             <HiOutlineSearch className="text-[#0BA6DF]" size={20} />
@@ -154,7 +150,6 @@ function SearchBar() {
           </div>
         </div>
 
-        {/* نوع معامله */}
         <div className="grid grid-cols-3 gap-1.5 bg-gray-50 p-1 rounded-xl">
           {[
             { key: "all", label: "همه", icon: null },
@@ -176,7 +171,6 @@ function SearchBar() {
           ))}
         </div>
 
-        {/* سرچ متنی */}
         <div className="relative">
           <HiOutlineSearch
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -192,7 +186,6 @@ function SearchBar() {
           />
         </div>
 
-        {/* لوکیشن */}
         <div className="relative">
           <HiOutlineLocationMarker
             className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400"
@@ -208,7 +201,6 @@ function SearchBar() {
           />
         </div>
 
-        {/* متراژ */}
         <div>
           <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1.5 mr-1">
             <HiOutlineArrowsExpand size={14} />
@@ -235,7 +227,6 @@ function SearchBar() {
           </div>
         </div>
 
-        {/* قیمت */}
         <div>
           <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1.5 mr-1">
             <HiOutlineCurrencyDollar size={14} />
@@ -262,7 +253,6 @@ function SearchBar() {
           </div>
         </div>
 
-        {/* دکمه سرچ */}
         <button
           onClick={handleSearch}
           className="bg-[#0BA6DF] hover:bg-[#0994c9] text-white rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-md shadow-[#0BA6DF]/25 active:scale-[0.98]"

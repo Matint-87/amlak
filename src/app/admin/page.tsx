@@ -43,7 +43,7 @@ export default function AdminPage() {
   }
 
   if (!isAuthenticated) {
-    return null; // یا می‌توانید یک spinner نشان دهید
+    return null; 
   }
 
   return <AdminDashboard onLogout={handleLogout} />;

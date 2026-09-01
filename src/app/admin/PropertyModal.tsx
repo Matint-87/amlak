@@ -11,7 +11,6 @@ const STATUS_OPTIONS = [
   { value: "under_construction", label: "در حال ساخت" },
 ];
 
-// جنریک تک‌خطی به‌جای چندخطی، برای جلوگیری از خطای پارس Turbopack/SWC
 type PropertyChangeEvent = React.ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 >;
@@ -63,7 +62,6 @@ const PropertyModal = ({
 
   useEffect(() => {
     if (!isOpen) {
-      // Reset form when modal closes
       setFormData({
         type: "buy",
         title: "",
@@ -271,7 +269,6 @@ const PropertyModal = ({
     }
 
     if (formData.type === "buy") {
-      // اجازه بده قیمت صفر باشد (یعنی توافقی) — فقط خالی بودن یا منفی بودن رد می‌شود
       if (
         formData.price === null ||
         formData.price === undefined ||
@@ -381,7 +378,6 @@ const PropertyModal = ({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Loading Indicator */}
             {loading && (
               <div className="bg-blue-50 p-4 rounded-md">
                 <div className="flex items-center">
@@ -395,7 +391,6 @@ const PropertyModal = ({
               </div>
             )}
 
-            {/* Required Fields */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
                 اطلاعات اجباری
@@ -489,7 +484,6 @@ const PropertyModal = ({
                   />
                 </div>
 
-                {/* نمایش فیلدهای قیمت بر اساس نوع معامله */}
                 <div className="md:col-span-2">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {showPriceFields()}
@@ -498,7 +492,6 @@ const PropertyModal = ({
               </div>
             </div>
 
-            {/* Optional Fields */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
                 اطلاعات تکمیلی
@@ -608,7 +601,6 @@ const PropertyModal = ({
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-3 pt-4 border-t">
               <button
                 type="button"

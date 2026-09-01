@@ -36,7 +36,6 @@ const STATUS_LABELS: Record<string, string> = {
   under_construction: "در حال ساخت",
 };
 
-// وضعیت‌هایی که یعنی آگهی دیگه معامله‌پذیر نیست
 const INACTIVE_STATUSES = ["sold", "rented", "cancelled"];
 
 export default function PropertyDetailPage() {
@@ -46,7 +45,7 @@ export default function PropertyDetailPage() {
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lightboxOpen, setLightboxOpen] = useState(false); // کنترل باز/بسته بودن نمایش تمام‌صفحه
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -110,7 +109,6 @@ export default function PropertyDetailPage() {
           return;
         }
 
-        // پردازش تصاویر
         let images: string[] = [];
         if (data.images) {
           if (typeof data.images === "string") {
@@ -143,7 +141,7 @@ export default function PropertyDetailPage() {
           status: data.status || "active",
           is_featured: Boolean(data.is_featured),
         });
-        setIndex(0); // با تعویض آگهی، ایندکس گالری تصاویر هم ریست بشه
+        setIndex(0); 
         setLoading(false);
       } catch (err: any) {
         if (!ignore) {
@@ -156,15 +154,11 @@ export default function PropertyDetailPage() {
 
     fetchProperty();
 
-    // Cleanup: وقتی افکت دوباره اجرا میشه یا کامپوننت unmount میشه،
-    // این اجرای قبلی رو "نامعتبر" علامت بزن تا دیگه state رو دستکاری نکنه
     return () => {
       ignore = true;
     };
   }, [params.slug, router]);
 
-  // مقدار قیمت از دیتابیس ممکن است رشته باشد (ستون NUMERIC)، پس هم null/undefined/""
-  // و هم رشته‌ی عددی "0" باید به‌عنوان «توافقی» تشخیص داده شوند.
   const formatPrice = (price?: number | string | null) => {
     if (price === null || price === undefined || price === "") {
       return "توافقی";
@@ -191,11 +185,6 @@ export default function PropertyDetailPage() {
     if (!dateString) return "";
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
-
-  // --- پالت رنگی صفحه ---
-  // پس‌زمینه: کاغذی گرم و خنثی، متن: سرمه‌ای تیره (نه مشکی خالص)
-  // رنگ شاخص: فیروزه‌ای تیره، الهام‌گرفته از کاشی‌کاری ایرانی — برای قیمت و اکشن اصلی
-  // رنگ فرعی گرم: برای تگ «اجاره» و لمس‌های ثانویه
   const palette = {
     page: "#ffffff",
     ink: "#17242A",
@@ -292,7 +281,6 @@ export default function PropertyDetailPage() {
   return (
     <div style={{ backgroundColor: palette.page, color: palette.ink }}>
       <div className="max-w-5xl mx-auto p-4 md:p-6 mt-5 pb-28 lg:pb-6">
-        {/* هدر صفحه */}
         <div className="flex justify-between items-center mb-5">
           <button
             onClick={() => router.back()}
@@ -312,15 +300,12 @@ export default function PropertyDetailPage() {
                 url,
               };
 
-              // اگه مرورگر از Web Share API پشتیبانی کنه (اکثر گوشی‌ها)، شیت native باز میشه
               if (navigator.share) {
                 try {
                   await navigator.share(shareData);
                 } catch (err) {
-                  // کاربر خودش شیت رو بسته یا لغو کرده، نیازی به نمایش خطا نیست
                 }
               } else {
-                // فال‌بک برای دسکتاپ/مرورگرهایی که Web Share ندارن
                 navigator.clipboard.writeText(url);
                 alert("لینک کپی شد!");
               }
@@ -333,7 +318,6 @@ export default function PropertyDetailPage() {
           </button>
         </div>
 
-        {/* بنر هشدار وقتی آگهی دیگه فعال نیست */}
         {isInactive && (
           <div
             className="mb-4 rounded-xl px-4 py-3 text-sm font-semibold flex items-center gap-2"
@@ -350,7 +334,6 @@ export default function PropertyDetailPage() {
           </div>
         )}
 
-        {/* گالری اصلی — تصویر تمام‌عرض با عنوان و قیمت روی خودِ تصویر */}
         {property.images && property.images.length > 0 ? (
           <div className="space-y-3 mb-6">
             <div
@@ -366,17 +349,13 @@ export default function PropertyDetailPage() {
                 }}
               />
 
-              {/* سایه‌روشن پایین تصویر برای خوانایی عنوان */}
               <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
-
-              {/* آیکون بزرگ‌نمایی */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none">
                 <div className="opacity-0 group-hover:opacity-100 bg-white/90 p-3 rounded-full transition-opacity">
                   <MdZoomIn size={26} />
                 </div>
               </div>
 
-              {/* نشان ویژه، بالای تصویر */}
               {property.is_featured && (
                 <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
                   <HiStar size={13} />
@@ -384,7 +363,6 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
-              {/* برچسب وضعیت، کنار شماره تصویر */}
               {status !== "active" && (
                 <div
                   className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm"
@@ -397,7 +375,6 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
-              {/* عنوان و برچسب معامله، روی خودِ تصویر */}
               <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 flex items-end justify-between gap-3 pointer-events-none">
                 <div>
                   <span className="inline-block px-3 py-1 rounded-full text-xs mb-2 border border-white/30 bg-white/10 backdrop-blur-sm text-white">
@@ -409,7 +386,6 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
 
-              {/* دکمه‌های ناوبری */}
               {property.images.length > 1 && (
                 <>
                   <button
@@ -445,7 +421,6 @@ export default function PropertyDetailPage() {
               )}
             </div>
 
-            {/* گالری کوچک */}
             {property.images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {property.images.map((img, i) => (
@@ -490,9 +465,7 @@ export default function PropertyDetailPage() {
         )}
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* ستون اصلی — آدرس، متراژ، توضیحات */}
           <div className="lg:w-2/3">
-            {/* اطلاعات کلی: متراژ و تاریخ ثبت، بدون باکس، با یک خط جداکننده‌ی عمودی */}
             {(property.meter || property.created_at) && (
               <div
                 className="flex flex-wrap items-center gap-5 pb-5 mb-5 border-b"
@@ -545,7 +518,6 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* آدرس */}
             {property.address && (
               <div
                 className="pb-5 mb-5 border-b"
@@ -579,7 +551,6 @@ export default function PropertyDetailPage() {
               </div>
             )}
 
-            {/* توضیحات */}
             {property.description && (
               <div>
                 <h3 className="font-semibold mb-2.5">توضیحات</h3>
@@ -593,7 +564,6 @@ export default function PropertyDetailPage() {
             )}
           </div>
 
-          {/* ستون کناری — قیمت و تماس، به‌صورت sticky در دسکتاپ */}
           <div className="lg:w-1/3">
             <div className="lg:sticky lg:top-6 space-y-4">
               <div
@@ -639,7 +609,6 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-      {/* نوار پایین چسبان در موبایل — دسترسی سریع به قیمت و تماس */}
       <div
         className="lg:hidden fixed bottom-0 inset-x-0 border-t bg-white/95 backdrop-blur-sm p-3 flex items-center justify-between gap-3 z-40"
         style={{ borderColor: palette.hair }}
@@ -679,7 +648,6 @@ export default function PropertyDetailPage() {
         )}
       </div>
 
-      {/* لایت‌باکس - نمایش تمام‌صفحه‌ی تصویر با کلیک */}
       {property.images && property.images.length > 0 && (
         <ImageLightbox
           images={property.images}

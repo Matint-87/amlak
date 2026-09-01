@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
 const COOKIE_NAME = "admin_session";
-const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // ۲۴ ساعت
+const SESSION_TTL_MS = 24 * 60 * 60 * 1000; 
 
 function getSecret(): string {
   const secret = process.env.ADMIN_SESSION_SECRET;
@@ -18,7 +18,6 @@ function sign(payload: string): string {
   return createHmac("sha256", getSecret()).update(payload).digest("hex");
 }
 
-// یک توکن نشست ساده و امضاشده می‌سازد: base64(expiry).signature
 export function createSessionToken(): string {
   const expiry = Date.now() + SESSION_TTL_MS;
   const payload = String(expiry);
@@ -62,7 +61,6 @@ export function verifyAdminPassword(password: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-// بررسی نشست ادمین از روی کوکی‌های درخواست جاری (برای استفاده در Route Handlerها)
 export async function isAdminRequestAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;

@@ -11,7 +11,6 @@ export async function GET(_request: NextRequest, { params }: Params) {
       return NextResponse.json({ data: bySlug.rows[0] });
     }
 
-    // سازگاری با لینک‌های قدیمی که ممکن است id بجای slug ارسال کرده باشند
     if (/^\d+$/.test(slug)) {
       const byId = await query("SELECT * FROM properties WHERE id = $1", [slug]);
       if (byId.rows.length > 0) {

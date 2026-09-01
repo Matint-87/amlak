@@ -109,7 +109,6 @@ export default function FeaturedSlider({ ads }: { ads: Ad[] }) {
                     group-hover:-translate-y-0.5
                   "
               >
-                {/* IMAGE */}
                 <div className="relative h-[165px] w-full overflow-hidden bg-gray-100">
                   <Image
                     src={getFirstImage(p.images)}
@@ -118,10 +117,8 @@ export default function FeaturedSlider({ ads }: { ads: Ad[] }) {
                     className="w-full h-full object-cover"
                   />
 
-                  {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
 
-                  {/* نشان ویژه */}
                   <div
                     className="
                         absolute
@@ -146,7 +143,6 @@ export default function FeaturedSlider({ ads }: { ads: Ad[] }) {
                     ویژه
                   </div>
 
-                  {/* Type */}
                   <div
                     className={`
                         absolute
@@ -166,7 +162,6 @@ export default function FeaturedSlider({ ads }: { ads: Ad[] }) {
                     {isBuy ? "فروش" : "رهن و اجاره"}
                   </div>
 
-                  {/* Main price */}
                   <div className="absolute bottom-3 right-3">
                     <p className="text-sm font-bold text-white drop-shadow-md">
                       {isBuy ? formatAmount(p.price) : formatAmount(p.deposit)}
@@ -180,14 +175,11 @@ export default function FeaturedSlider({ ads }: { ads: Ad[] }) {
                   </div>
                 </div>
 
-                {/* CONTENT */}
                 <div className="p-3">
-                  {/* Title */}
                   <h3 className="truncate text-[15px] font-bold text-gray-900 transition-colors group-hover:text-amber-600">
                     {p.title}
                   </h3>
 
-                  {/* Address */}
                   <div className="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
                     <HiOutlineLocationMarker
                       className="shrink-0 text-red-500"
@@ -196,11 +188,7 @@ export default function FeaturedSlider({ ads }: { ads: Ad[] }) {
 
                     <span className="truncate">{p.address}</span>
                   </div>
-
-                  {/* Divider */}
                   <div className="my-3 h-px bg-gray-100" />
-
-                  {/* PRICE */}
                   {isBuy ? (
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] text-gray-400">قیمت کل</span>
